@@ -1,7 +1,7 @@
 
 function Footer() {
     return (
-        <footer className="flex items-center bg-white shadow pl-6 h-auto relative justify-between pr-30">
+        <footer className="flex items-center bg-white shadow pl-6 h-auto relative justify-between pr-30 py-10">
             {/* Left side information*/}
             <aside>
                 <h2 className="text-xl text-[#116a2aca] my-2">VitaTrack</h2>
