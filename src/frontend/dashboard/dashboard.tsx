@@ -6,7 +6,7 @@ function DashBoard() {
     return (
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
             <Header />
-            <div className="p-10">
+            <div className="p-10 flex justify-between">
                 <div className="w-5/20">
                     <div className="flex flex-col gap-5 mb-5">
                         <h1 className="text-4xl font-bold">
@@ -51,6 +51,37 @@ function DashBoard() {
                     <div>
 
                     </div>
+                </div>
+                <div className="w-14/20">
+
+                    <div className="flex justify-between">
+                        <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
+                            <h3 className="text-2xl">Current Weight</h3>
+                            <div className="flex items-end gap-1">
+                                <span className="text-2xl font-bold">62.2</span>
+                                <span className="text-sm self-end">kg</span>
+                            </div>
+                        </div>
+
+                        <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
+                            <h3 className="text-2xl">Weekly Change</h3>
+                            <div className="flex items-end gap-1">
+                                <span className="text-2xl font-bold">+0.8</span>
+                                <span className="text-sm self-end">kg</span>
+                            </div>
+                        </div>
+
+                        <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
+                            <h3 className="text-2xl">Goal Progress</h3>
+                            <div className="flex">
+                                <h3 className="text-2xl font-bold">82%</h3>
+                            </div>
+                            <div className="h-1 w-full bg-black/20 rounded-full overflow-hidden">
+                                <div className="h-full w-82/100 bg-[#3e5d48] rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <Footer />
