@@ -95,6 +95,10 @@ function DashBoard() {
                                         <h3>2023-10-23</h3>
                                         <h3>2023-10-22</h3>
                                         <h3>2023-10-20</h3>
+                                        <h3>2023-10-24</h3>
+                                        <h3>2023-10-23</h3>
+                                        <h3>2023-10-22</h3>
+                                        <h3>2023-10-20</h3>
                                     </section>
                                 </div>
 
@@ -102,6 +106,10 @@ function DashBoard() {
                                 <div className="w-1/5">
                                     <h2 className="text-xl">WEIGHT</h2>
                                     <section className="flex flex-col gap-10 pt-5">
+                                        <h3>63.7 kg</h3>
+                                        <h3>64.7 kg</h3>
+                                        <h3>64.7 kg</h3>
+                                        <h3>65.9 kg</h3>
                                         <h3>63.7 kg</h3>
                                         <h3>64.7 kg</h3>
                                         <h3>64.7 kg</h3>
@@ -117,6 +125,10 @@ function DashBoard() {
                                         <h3 className="text-[#116a2aca]">↑ + 1 kg</h3>
                                         <h3>– 0.0 kg</h3>
                                         <h3 className="text-[#116a2aca]">↑ + 1.2 kg</h3>
+                                        <h3 className="text-red-500">↓ -1.5 kg</h3>
+                                        <h3 className="text-[#116a2aca]">↑ + 1 kg</h3>
+                                        <h3>– 0.0 kg</h3>
+                                        <h3 className="text-[#116a2aca]">↑ + 1.2 kg</h3>
                                     </section>
                                 </div>
 
@@ -128,12 +140,23 @@ function DashBoard() {
                                         <h3 >Did less training and ate more.</h3>
                                         <h3>Did not anything special.</h3>
                                         <h3 >–</h3>
+                                        <h3 >I trained alot and lost weight.</h3>
+                                        <h3 >Did less training and ate more.</h3>
+                                        <h3>Did not anything special.</h3>
+                                        <h3 >–</h3>
                                     </section>
                                 </div>
                             </section>
                             <button className="w-[calc(100%+2.5rem)] -mx-5 border-t-2 mt-10 py-2 border-[#bad7c3] hover:bg-[#bad7c3] hover:rounded-b-2xl">View Full History</button>
                         </div>
                     </div>
+
+                    <section className="w-full bg-[url('/Pictures/Pray.png')] bg-cover bg-center text-white text-center p-10 rounded-2xl">
+                        <h2 className="text-3xl">Scientific Perspective</h2>
+                        <p className="text-2xl">Weight fluctuates based on hydration, sodium, and muscle recovery. <br />
+                            Focus on the 7-day rolling average for the most accurate health picture.
+                        </p>
+                    </section>
                 </div>
             </div>
             <Footer />
