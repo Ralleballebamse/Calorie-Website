@@ -52,7 +52,7 @@ function DashBoard() {
 
                     </div>
                 </div>
-                <div className="w-14/20">
+                <div className="w-14/20 flex flex-col gap-5">
 
                     <div className="flex justify-between">
                         <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
@@ -82,6 +82,58 @@ function DashBoard() {
                         </div>
                     </div>
 
+                    <div className="bg-white rounded-2xl pb-0 p-5">
+                        <div>
+                            <h2 className="text-2xl font-bold py-5">Weight History</h2>
+
+                            <section className="flex">
+                                {/* Date */}
+                                <div className="w-1/5">
+                                    <h2 className="text-xl">DATE</h2>
+                                    <section className="flex flex-col gap-10 pt-5">
+                                        <h3>2023-10-24</h3>
+                                        <h3>2023-10-23</h3>
+                                        <h3>2023-10-22</h3>
+                                        <h3>2023-10-20</h3>
+                                    </section>
+                                </div>
+
+                                {/* Weight */}
+                                <div className="w-1/5">
+                                    <h2 className="text-xl">WEIGHT</h2>
+                                    <section className="flex flex-col gap-10 pt-5">
+                                        <h3>63.7 kg</h3>
+                                        <h3>64.7 kg</h3>
+                                        <h3>64.7 kg</h3>
+                                        <h3>65.9 kg</h3>
+                                    </section>
+                                </div>
+
+                                {/* Change */}
+                                <div className="w-1/5">
+                                    <h2 className="text-xl">CHANGE</h2>
+                                    <section className="flex flex-col gap-10 pt-5">
+                                        <h3 className="text-red-500">↓ -1.5 kg</h3>
+                                        <h3 className="text-[#116a2aca]">↑ + 1 kg</h3>
+                                        <h3>– 0.0 kg</h3>
+                                        <h3 className="text-[#116a2aca]">↑ + 1.2 kg</h3>
+                                    </section>
+                                </div>
+
+                                {/* Notes */}
+                                <div className="w-2/5">
+                                    <h2 className="text-xl">NOTES</h2>
+                                    <section className="flex flex-col gap-10 pt-5">
+                                        <h3 >I trained alot and lost weight.</h3>
+                                        <h3 >Did less training and ate more.</h3>
+                                        <h3>Did not anything special.</h3>
+                                        <h3 >–</h3>
+                                    </section>
+                                </div>
+                            </section>
+                            <button className="w-[calc(100%+2.5rem)] -mx-5 border-t-2 mt-10 py-2 border-[#bad7c3] hover:bg-[#bad7c3] hover:rounded-b-2xl">View Full History</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <Footer />
