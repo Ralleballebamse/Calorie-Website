@@ -1,11 +1,36 @@
 import "../App.css"
 import Header from "../Components/header";
 import Footer from "../Components/footer";
+import { useState } from "react";
+import {
+    AreaChart,
+    Line,
+    Area,
+    XAxis,
+    YAxis,
+    Tooltip,
+    ResponsiveContainer,
+} from "recharts";
 
 function Tracking() {
+
+    const data = [
+        { date: "Sep 01", weight: 74.8 },
+        { date: "Sep 08", weight: 74.5 },
+        { date: "Sep 15", weight: 74.4 },
+        { date: "Sep 22", weight: 72.4 },
+        { date: "Today", weight: 71.9 },
+    ];
+
+    const [selected, setSelected] = useState<"Weekly" | "Monthly" | null>("Weekly");
+
     return (
+
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
+
+
             <Header />
+
             <main>
                 <div className="flex flex-col  p-10 gap-10">
                     <div className="flex justify-between">
@@ -43,8 +68,105 @@ function Tracking() {
                             <div className="flex">
                                 <img src="/Pictures/2Temporary.png" alt="Statistics" className="rounded-2xl" />
                             </div>
-
                         </section>
+                    </div>
+
+                    <div className="flex gap-5">
+                        <div className="bg-white rounded-2xl p-8 h-auto w-7/10">
+                            <div className="mb-8 flex justify-between">
+                                <section>
+                                    <h3 className="font-bold">Weight Progress Analysis</h3>
+                                    <p className="text-sm text-gray-500">Last 30 Days Tracking</p>
+                                </section>
+                                <section className="bg-gray-200 rounded-lg p-1 flex w-fit">
+                                    <button
+                                        onClick={() => setSelected("Weekly")}
+                                        className={`px-4 py-1 rounded-md ${selected === "Weekly"
+                                                ? "bg-white shadow-sm"
+                                                : "text-gray-600"
+                                            }`}
+                                    >Weekly</button>
+                                    <button
+                                        onClick={() => setSelected("Monthly")}
+                                        className={`px-4 py-1 rounded-md ${selected === "Monthly"
+                                                ? "bg-white shadow-sm"
+                                                : "text-gray-600"
+                                            }`}
+                                    >Monthly</button>
+                                </section>
+                            </div>
+
+                            <ResponsiveContainer width="100%" height="70%">
+                                <AreaChart data={data}>
+                                    <XAxis dataKey="date" />
+                                    <YAxis hide domain={["dataMin - 1", "dataMax + 1"]} />
+                                    <Tooltip />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="weight"
+                                        stroke="none"
+                                        fill="#1B3D34"
+                                        fillOpacity={0.1}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="weight"
+                                        stroke="#55715C"
+                                        strokeWidth={3}
+                                        dot={{ r: 4 }}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="bg-white w-3/10 flex flex-col p-10 gap-10 rounded-2xl">
+                            <section className="flex justify-between">
+                                <h2>Recent Activity</h2>
+                                <button className="hover:underline">View All</button>
+                            </section>
+                            <section className="flex gap-3">
+                                <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
+                                    <i className="fa-solid fa-feather-pointed"></i>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold">Weight Logged</h3>
+                                    <h4>72.4 kg (-0.4kg)</h4>
+                                </div>
+                                <h4 className="ml-auto">08:30 AM</h4>
+                            </section>
+
+                            <section className="flex gap-3">
+                                <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
+                                    <i className="fa-solid fa-feather-pointed"></i>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold">Weight Logged</h3>
+                                    <h4>72.4 kg (-0.4kg)</h4>
+                                </div>
+                                <h4 className="ml-auto">Yesterday</h4>
+                            </section>
+
+                            <section className="flex gap-3">
+                                <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
+                                    <i className="fa-solid fa-feather-pointed"></i>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold">Weight Logged</h3>
+                                    <h4>72.4 kg (-0.4kg)</h4>
+                                </div>
+                                <h4 className="ml-auto">2 days ago</h4>
+                            </section>
+
+                            <section className="flex gap-3">
+                                <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
+                                    <i className="fa-solid fa-feather-pointed"></i>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold">Weight Logged</h3>
+                                    <h4>72.4 kg (-0.4kg)</h4>
+                                </div>
+                                <h4 className="ml-auto">1 week ago</h4>
+                            </section>
+                        </div>
                     </div>
 
 
@@ -52,7 +174,6 @@ function Tracking() {
 
                 </div>
             </main>
-
             <Footer />
         </ div>
     );
