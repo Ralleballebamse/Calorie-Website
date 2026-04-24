@@ -66,7 +66,7 @@ function Tracking() {
                                 <h4>Your average weight dropped by 0.8 kg compared to last week.</h4>
                             </div>
                             <div className="flex">
-                                <img src="/Pictures/2Temporary.png" alt="Statistics" className="rounded-2xl" />
+                                <img src="/Pictures/Statistic.png" alt="Statistics" className="rounded-2xl w-50" />
                             </div>
                         </section>
                     </div>
@@ -82,15 +82,15 @@ function Tracking() {
                                     <button
                                         onClick={() => setSelected("Weekly")}
                                         className={`px-4 py-1 rounded-md ${selected === "Weekly"
-                                                ? "bg-white shadow-sm"
-                                                : "text-gray-600"
+                                            ? "bg-white shadow-sm"
+                                            : "text-gray-600"
                                             }`}
                                     >Weekly</button>
                                     <button
                                         onClick={() => setSelected("Monthly")}
                                         className={`px-4 py-1 rounded-md ${selected === "Monthly"
-                                                ? "bg-white shadow-sm"
-                                                : "text-gray-600"
+                                            ? "bg-white shadow-sm"
+                                            : "text-gray-600"
                                             }`}
                                     >Monthly</button>
                                 </section>
@@ -169,7 +169,13 @@ function Tracking() {
                         </div>
                     </div>
 
-
+                    <div className="bg-[url('/Pictures/VitaPro.png')] rounded-2xl h-auto text-white">
+                        <section className="flex flex-col gap-5 w-1/2 p-10">
+                            <h2 className="text-4xl">Upgrade to VitaTrack Pro</h2>
+                            <h3 className="text-xl">Unlock advanced AI analysis of your biomarkers and personalized meal plans tailored to your metabolism</h3>
+                            <button className="bg-white rounded-2xl w-50 h-15 text-xl text-black font-bold hover:bg-[#3b674a]">Start Free Trial</button>
+                        </section>
+                    </div>
 
 
                 </div>
