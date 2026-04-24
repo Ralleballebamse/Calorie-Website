@@ -2,7 +2,7 @@ import { useState } from "react";
 
 function Header() {
 
-  const [selected, setSelected] = useState<"Home" | "Feature" | "Dashboard" | null>("Home");
+  const [selected, setSelected] = useState<"Home" | "Feature" | "Dashboard" | "Tracking" | null>("Home");
 
   return (
     <header className="flex items-center bg-white shadow px-6 h-18 relative">
@@ -33,6 +33,13 @@ function Header() {
               : ""
               }`}
           >Dashboard</button>
+            <button
+            onClick={() => setSelected("Tracking")}
+            className={`${selected == "Tracking"
+              ? "!text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
+              : ""
+              }`}
+          >Tracking</button>
         </nav>
 
         {/* Right */}
