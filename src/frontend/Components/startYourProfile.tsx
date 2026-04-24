@@ -2,7 +2,7 @@
 
 function StartYourProfile() {
     return (
-        <div className="px-10 py-10">
+        <div>
             <div className="flex flex-col items-center bg-[#1B3D34] py-10 rounded-3xl">
                 <div className="flex flex-col gap-5 w-1/2 text-center">
                     <h2 className="font-bold text-4xl text-white">Ready to reach your target?</h2>

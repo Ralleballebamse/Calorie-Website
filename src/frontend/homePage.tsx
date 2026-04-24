@@ -109,7 +109,9 @@ function LoginPage() {
 
         </div>
 
-        <StartYourProfile />
+        <div className="m-10">
+          <StartYourProfile />
+        </div>
 
       </main>
       <Footer />
