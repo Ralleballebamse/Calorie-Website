@@ -5,6 +5,8 @@ import './index.css'
 import HomePage from "./homePage.tsx";
 import LoginPage from './loginpage/loginpage'
 import DashBoard from "./dashboard/dashboard.tsx"
+import Tracking from "./Tracking/tracking.tsx"
+
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,11 @@ const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: <DashBoard />,
+      }
+      ,
+      {
+        path: "/tracking",
+        element: <Tracking />,
       }
     ],
   },
