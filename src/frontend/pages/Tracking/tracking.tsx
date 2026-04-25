@@ -3,7 +3,7 @@ import Header from "../../Components/header";
 import Footer from "../../Components/footer";
 import { useState } from "react";
 
-function DashBoard() {
+function Tracking() {
 
     const [weight, setWeight] = useState("");
     const [date, setDate] = useState("");
@@ -221,4 +221,4 @@ function DashBoard() {
     );
 }
 
-export default DashBoard;
+export default Tracking;

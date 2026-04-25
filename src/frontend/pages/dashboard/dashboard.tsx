@@ -12,7 +12,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-function Tracking() {
+function Dashboard() {
 
     const data = [
         { date: "Sep 01", weight: 74.8 },
@@ -185,4 +185,4 @@ function Tracking() {
     );
 }
 
-export default Tracking;
+export default Dashboard;
