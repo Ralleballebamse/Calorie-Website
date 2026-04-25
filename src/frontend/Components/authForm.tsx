@@ -16,8 +16,37 @@ function AuthForm({ mode }: AuthFormProps) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const [errors, setErrors] = useState({
+        username: "",
+        identifier: "",
+        email: "",
+        password: "",
+    });
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const newErrors = {
+            username: "",
+            identifier: "",
+            email: "",
+            password: "",
+        };
+
+        if (isLogin) {
+            if (!identifier.trim()) newErrors.identifier = "Email or username is required";
+        } else {
+            if (!username.trim()) newErrors.username = "Username is required";
+            if (!email.trim()) newErrors.email = "Email is required";
+        }
+
+        if (!password.trim()) newErrors.password = "Password is required";
+
+        setErrors(newErrors);
+
+        if (Object.values(newErrors).some((error) => error !== "")) {
+            return;
+        }
 
         const url = isLogin
             ? "http://localhost:5000/api/auth/login"
@@ -54,7 +83,9 @@ function AuthForm({ mode }: AuthFormProps) {
     return (
         <div className="min-h-screen flex flex-col bg-[url('/Pictures/Leaves.jpeg')]">
             <header className="flex flex-col items-center gap-2 pt-10 pb-15">
-                <h1 className="text-[#07fb4cca] font-bold text-2xl">VitaTrack</h1>
+                <button
+                    onClick={() => navigate("/")}
+                    className="text-[#07fb4cca] font-bold text-2xl">VitaTrack</button>
                 <h3 className="text-xl text-[#07fb4cca]">
                     Precision wellness for your longevity
                 </h3>
@@ -89,13 +120,16 @@ function AuthForm({ mode }: AuthFormProps) {
                                         onChange={(e) => setUsername(e.target.value)}
                                     />
                                 </div>
+                                {errors.username && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+                                )}
                             </div>
                         )}
 
                         {isLogin ? (
                             <div className="text-xl">
                                 <label>Email or Username</label>
-                                <div className="bg-blue-100 rounded-xl border h-12 flex px-4">
+                                <div className="bg-blue-100 rounded-xl border h-12 flex px-4 outline-none">
                                     <input
                                         type="text"
                                         placeholder="name@example.com"
@@ -104,6 +138,9 @@ function AuthForm({ mode }: AuthFormProps) {
                                         onChange={(e) => setIdentifier(e.target.value)}
                                     />
                                 </div>
+                                {errors.identifier && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.identifier}</p>
+                                )}
                             </div>
                         ) : (
                             <div className="text-xl">
@@ -117,6 +154,9 @@ function AuthForm({ mode }: AuthFormProps) {
                                         onChange={(e) => setEmail(e.target.value)}
                                     />
                                 </div>
+                                {errors.email && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                                )}
                             </div>
                         )}
 
@@ -139,11 +179,14 @@ function AuthForm({ mode }: AuthFormProps) {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                             </div>
+                            {errors.password && (
+                                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                            )}
                         </div>
 
                         {isLogin && (
                             <div className="text-xl flex gap-2 items-center">
-                                <input type="checkbox" className="w-5 h-5" />
+                                <input type="checkbox" className="w-5 h-5 appearance-none border rounded checked:appearance-auto checked:accent-[#116a2aca]" />
                                 <label>Keep me logged in</label>
                             </div>
                         )}
@@ -170,6 +213,13 @@ function AuthForm({ mode }: AuthFormProps) {
                     </div>
                 </form>
             </main>
+            <footer>
+                <nav className="flex gap-10 justify-center pb-10 pt-15 text-[#07fb4cca]">
+                    <button className="hover:underline">Privacy</button>
+                    <button className="hover:underline">Terms of Service</button>
+                    <button className="hover:underline">Help Center</button>
+                </nav>
+            </footer>
         </div>
     );
 }

@@ -54,6 +54,15 @@ function Dashboard() {
             ? dashboardData.weeklyChart
             : dashboardData.monthlyChart;
 
+    const hasData = chartData && chartData.length > 0;
+
+    const safeChartData = hasData
+        ? chartData
+        : [
+            { date: "", weight: 0 },
+            { date: "", weight: 0 },
+        ];
+
     return (
 
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
@@ -143,34 +152,36 @@ function Dashboard() {
                                 </section>
                             </div>
 
-                            <ResponsiveContainer width="100%" height="70%">
-                                <AreaChart data={chartData}>
-                                    <XAxis dataKey="date" />
-                                    <YAxis hide domain={["dataMin - 1", "dataMax + 1"]} />
-                                    <Tooltip />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="weight"
-                                        stroke="none"
-                                        fill="#1B3D34"
-                                        fillOpacity={0.1}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="weight"
-                                        stroke="#55715C"
-                                        strokeWidth={3}
-                                        dot={{ r: 4 }}
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
+                            <div className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={safeChartData}>
+                                        <XAxis dataKey="date" />
+                                        <YAxis hide domain={["dataMin - 1", "dataMax + 1"]} />
+                                        <Tooltip />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="weight"
+                                            stroke="none"
+                                            fill="#1B3D34"
+                                            fillOpacity={0.1}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="weight"
+                                            stroke="#55715C"
+                                            strokeWidth={3}
+                                            dot={{ r: 4 }}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
                         <div className="bg-white w-3/10 flex flex-col p-10 gap-10 rounded-2xl">
                             <section className="flex justify-between">
                                 <h2>Recent Activity</h2>
-                                <button 
-                                onClick={() => navigate("/tracking")}
-                                className="hover:underline">View All</button>
+                                <button
+                                    onClick={() => navigate("/tracking")}
+                                    className="hover:underline">View All</button>
                             </section>
                             {dashboardData.recentActivity.map((activity: any) => (
                                 <section key={activity._id} className="flex gap-3">
