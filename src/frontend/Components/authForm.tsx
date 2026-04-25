@@ -44,6 +44,7 @@ function AuthForm({ mode }: AuthFormProps) {
 
         if (isLogin) {
             localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
             navigate("/dashboard");
         } else {
             navigate("/login");

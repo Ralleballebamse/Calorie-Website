@@ -206,16 +206,16 @@ function Tracking() {
                                             key={entry._id}
                                             className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 items-start"
                                         >
-                                            <h3 className="min-w-0 break-words overflow-wrap-anywhere">
+                                            <h3 className="min-w-0 wrap-break-word overflow-wrap-anywhere">
                                                 {new Date(entry.date).toISOString().split("T")[0]}
                                             </h3>
 
-                                            <h3 className="min-w-0 break-words">
+                                            <h3 className="min-w-0 wrap-break-word">
                                                 {entry.weight} kg
                                             </h3>
 
                                             <h3
-                                                className={`min-w-0 break-words ${entry.change < 0
+                                                className={`min-w-0 wrap-break-word ${entry.change < 0
                                                         ? "text-red-500"
                                                         : entry.change > 0
                                                             ? "text-[#116a2aca]"
@@ -229,7 +229,7 @@ function Tracking() {
                                                         : "– 0.0 kg"}
                                             </h3>
 
-                                            <h3 className="min-w-0 break-words whitespace-pre-wrap">
+                                            <h3 className="min-w-0 wrap-break-word whitespace-pre-wrap">
                                                 {entry.notes || "–"}
                                             </h3>
                                         </div>

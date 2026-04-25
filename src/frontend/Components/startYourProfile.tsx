@@ -13,7 +13,7 @@ function StartYourProfile() {
                         with health through precise data and clinical insight.</p>
                     <button
                         onClick={() => navigate("/create")}
-                        className="text-[#1B3D34] bg-white font-bold h-15 w-55 rounded-2xl self-center text-xl">Start Your Profile</button>
+                        className="text-[#1B3D34] bg-white font-bold h-15 w-55 rounded-2xl self-center text-xl hover:bg-[#3b674a]">Start Your Profile</button>
                 </div>
             </div>
         </div>

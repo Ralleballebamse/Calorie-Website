@@ -7,8 +7,6 @@ import LoginAccount from './pages/authPage/loginAccount.tsx';
 import CreateAccount from './pages/authPage/createAccount.tsx';
 import DashBoard from "./pages/dashboard/dashboard.tsx";
 import Tracking from "./pages/Tracking/tracking.tsx";
-import Feature from "./pages/Feature/feature.tsx";
-
 
 const router = createBrowserRouter([
   {
@@ -32,10 +30,6 @@ const router = createBrowserRouter([
       {
         path: "/tracking",
         element: <Tracking />,
-      },
-      {
-        path: "/feature",
-        element: <Feature />,
       },
     ],
   },

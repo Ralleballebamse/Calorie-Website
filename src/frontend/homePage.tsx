@@ -26,10 +26,10 @@ function LoginPage() {
             <nav className="flex gap-5">
               <button
                 onClick={() => navigate("/create")}
-                className="bg-[#1B3022] text-white h-14 w-50 text-2xl rounded-2xl">Get Started</button>
+                className="bg-[#1B3022] text-white h-14 w-50 text-2xl rounded-2xl hover:bg-[#3e5d48]">Get Started</button>
               <button
                 onClick={() => navigate("/login")}
-                className="bg-[#bfcec0] text-[#3e5d48] h-14 w-50 text-2xl rounded-2xl">Log In</button>
+                className="bg-[#bfcec0] text-[#3e5d48] h-14 w-50 text-2xl rounded-2xl hover:bg-[#8baf8d]">Log In</button>
             </nav>
           </div>
           <img src="Pictures/HeadPicture.png" alt="Statistics about weighlosing" className="rounded-2xl" />
