@@ -1,7 +1,6 @@
 import "../../App.css"
 import Header from "../../Components/header";
 import Footer from "../../Components/footer";
-import { useState } from "react";
 import {
     AreaChart,
     Line,
@@ -11,18 +10,49 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from "recharts";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
 
-    const data = [
-        { date: "Sep 01", weight: 74.8 },
-        { date: "Sep 08", weight: 74.5 },
-        { date: "Sep 15", weight: 74.4 },
-        { date: "Sep 22", weight: 72.4 },
-        { date: "Today", weight: 71.9 },
-    ];
+    const navigate = useNavigate();
 
-    const [selected, setSelected] = useState<"Weekly" | "Monthly" | null>("Weekly");
+    const [selected, setSelected] = useState<"Weekly" | "Monthly">("Weekly");
+
+    const [dashboardData, setDashboardData] = useState({
+        currentWeight: 0,
+        yesterdayChange: 0,
+        totalProgress: 0,
+        goalProgress: 0,
+        weeklyTrend: "",
+        weeklyTrendText: "",
+        weeklyChart: [],
+        monthlyChart: [],
+        recentActivity: [],
+    });
+
+    useEffect(() => {
+        const fetchDashboard = async () => {
+            const response = await fetch("http://localhost:5000/api/dashboard", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setDashboardData(data);
+            }
+        };
+
+        fetchDashboard();
+    }, []);
+
+    const chartData =
+        selected === "Weekly"
+            ? dashboardData.weeklyChart
+            : dashboardData.monthlyChart;
 
     return (
 
@@ -39,31 +69,48 @@ function Dashboard() {
                             <h2 className="text-2xl">Welcome back. Your wellness metrics are looking consistent this week.</h2>
                         </section>
                         <section className="flex flex-col justify-center">
-                            <button className="bg-[#1B3022] rounded-xl text-white text-xl h-10 w-40 hover:bg-[#3b674a]">+ Add Entry</button>
+                            <button
+                                onClick={() => navigate("/tracking")}
+                                className="bg-[#1B3022] rounded-xl text-white text-xl h-10 w-40 hover:bg-[#3b674a]"
+                            >+ Add Entry</button>
                         </section>
                     </div>
 
                     <div className="flex gap-5 justify-between">
                         <section className="flex flex-col w-1/4 bg-white p-5 rounded-xl gap-2 justify-center">
                             <h2 className="text-xl">CURRENT WEIGHT</h2>
-                            <h3 className="font-bold text-4xl">72.4 kg</h3>
-                            <h4>-0.4 kg from yesterday</h4>
+                            <h3 className="font-bold text-4xl">
+                                {dashboardData.currentWeight} kg
+                            </h3>
+                            <h4>
+                                {dashboardData.yesterdayChange > 0 ? "+" : ""}
+                                {dashboardData.yesterdayChange} kg from last log
+                            </h4>
                         </section>
 
                         <section className="flex flex-col w-1/4 bg-white p-5 rounded-xl gap-2 justify-center">
                             <h2 className="text-xl">TOTAL PROGRESS</h2>
-                            <h3 className="font-bold text-4xl">-5.2 kg</h3>
+                            <h3 className="font-bold text-4xl">
+                                {dashboardData.totalProgress > 0 ? "+" : ""}
+                                {dashboardData.totalProgress} kg
+                            </h3>
                             <div className="h-1 w-full bg-black/20 rounded-full overflow-hidden">
-                                <div className="h-full w-65/100 bg-[#3e5d48] rounded-full"></div>
+                                <div
+                                    className="h-full bg-[#3e5d48] rounded-full"
+                                    style={{ width: `${dashboardData.goalProgress}%` }}
+                                ></div>
                             </div>
-                            <h4>65% of target goal reached</h4>
+                            <h4>{dashboardData.goalProgress}% of target goal reached</h4>
                         </section>
 
                         <section className="flex w-2/4 bg-white p-5 rounded-xl justify-between">
                             <div className="flex flex-col bg-white gap-2 justify-center">
                                 <h2 className="text-xl">WEEKLY TREND</h2>
-                                <h3 className="font-bold text-4xl">Steady Decrease</h3>
-                                <h4>Your average weight dropped by 0.8 kg compared to last week.</h4>
+                                <h3 className="font-bold text-4xl">
+                                    {dashboardData.weeklyTrend}
+                                </h3>
+
+                                <h4>{dashboardData.weeklyTrendText}</h4>
                             </div>
                             <div className="flex">
                                 <img src="/Pictures/Statistic.png" alt="Statistics" className="rounded-2xl w-50" />
@@ -97,7 +144,7 @@ function Dashboard() {
                             </div>
 
                             <ResponsiveContainer width="100%" height="70%">
-                                <AreaChart data={data}>
+                                <AreaChart data={chartData}>
                                     <XAxis dataKey="date" />
                                     <YAxis hide domain={["dataMin - 1", "dataMax + 1"]} />
                                     <Tooltip />
@@ -121,51 +168,28 @@ function Dashboard() {
                         <div className="bg-white w-3/10 flex flex-col p-10 gap-10 rounded-2xl">
                             <section className="flex justify-between">
                                 <h2>Recent Activity</h2>
-                                <button className="hover:underline">View All</button>
+                                <button 
+                                onClick={() => navigate("/tracking")}
+                                className="hover:underline">View All</button>
                             </section>
-                            <section className="flex gap-3">
-                                <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
-                                    <i className="fa-solid fa-feather-pointed"></i>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold">Weight Logged</h3>
-                                    <h4>72.4 kg (-0.4kg)</h4>
-                                </div>
-                                <h4 className="ml-auto">08:30 AM</h4>
-                            </section>
+                            {dashboardData.recentActivity.map((activity: any) => (
+                                <section key={activity._id} className="flex gap-3">
+                                    <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
+                                        <i className="fa-solid fa-feather-pointed"></i>
+                                    </div>
 
-                            <section className="flex gap-3">
-                                <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
-                                    <i className="fa-solid fa-feather-pointed"></i>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold">Weight Logged</h3>
-                                    <h4>72.4 kg (-0.4kg)</h4>
-                                </div>
-                                <h4 className="ml-auto">Yesterday</h4>
-                            </section>
+                                    <div>
+                                        <h3 className="font-bold">Weight Logged</h3>
+                                        <h4>
+                                            {activity.weight} kg (
+                                            {activity.change > 0 ? "+" : ""}
+                                            {activity.change} kg)
+                                        </h4>
+                                    </div>
 
-                            <section className="flex gap-3">
-                                <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
-                                    <i className="fa-solid fa-feather-pointed"></i>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold">Weight Logged</h3>
-                                    <h4>72.4 kg (-0.4kg)</h4>
-                                </div>
-                                <h4 className="ml-auto">2 days ago</h4>
-                            </section>
-
-                            <section className="flex gap-3">
-                                <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
-                                    <i className="fa-solid fa-feather-pointed"></i>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold">Weight Logged</h3>
-                                    <h4>72.4 kg (-0.4kg)</h4>
-                                </div>
-                                <h4 className="ml-auto">1 week ago</h4>
-                            </section>
+                                    <h4 className="ml-auto">{activity.time}</h4>
+                                </section>
+                            ))}
                         </div>
                     </div>
 
@@ -173,7 +197,9 @@ function Dashboard() {
                         <section className="flex flex-col gap-5 w-1/2 p-10">
                             <h2 className="text-4xl">Upgrade to VitaTrack Pro</h2>
                             <h3 className="text-xl">Unlock advanced AI analysis of your biomarkers and personalized meal plans tailored to your metabolism</h3>
-                            <button className="bg-white rounded-2xl w-50 h-15 text-xl text-black font-bold hover:bg-[#3b674a]">Start Free Trial</button>
+                            <button
+                                onClick={() => navigate("/create")}
+                                className="bg-white rounded-2xl w-50 h-15 text-xl text-black font-bold hover:bg-[#3b674a]">Start Free Trial</button>
                         </section>
                     </div>
 
