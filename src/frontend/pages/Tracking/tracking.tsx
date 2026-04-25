@@ -1,8 +1,50 @@
 import "../../App.css"
 import Header from "../../Components/header";
 import Footer from "../../Components/footer";
+import { useState } from "react";
 
 function DashBoard() {
+
+    const [weight, setWeight] = useState("");
+    const [date, setDate] = useState("");
+    const [notes, setNotes] = useState("");
+
+    const handleSave = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await fetch("http://localhost:5000/api/weights", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    weight: Number(weight),
+                    date,
+                    notes,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message);
+                return;
+            }
+
+            console.log("Saved:", data);
+
+            // clear inputs after save
+            setWeight("");
+            setDate("");
+            setNotes("");
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
             <Header />
@@ -21,20 +63,35 @@ function DashBoard() {
                         <h2 className="text-xl font-bold">Log Weight</h2>
                         <section>
                             <h3>Weight Value</h3>
-                            <input type="text" placeholder="00.00" className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3" />
+                            <input
+                                type="number"
+                                placeholder="00.00"
+                                value={weight}
+                                onChange={(e) => setWeight(e.target.value)}
+                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
+                            />
                         </section>
                         <section>
                             <h3>Date</h3>
-                            <input type="date" placeholder="year - mm - dd" className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3" />
+                            <input
+                                type="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
+                            />
                         </section>
                         <section>
                             <h3>Optional Notes</h3>
                             <textarea
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
                                 placeholder="How are you feeling today?"
                                 className="bg-blue-100 rounded-xl h-30 w-full outline-none p-3 resize-none"
                             />
                         </section>
-                        <button className="bg-[#1B3022] rounded-2xl text-white h-10 hover:bg-[#3b674a]">+ Save Entry</button>
+                        <button
+                            onClick={handleSave}
+                            className="bg-[#1B3022] rounded-2xl text-white h-10 hover:bg-[#3b674a]">+ Save Entry</button>
                     </div>
 
                     <div className="bg-[#e2ece2] flex flex-col p-5 mt-5 rounded-2xl">
