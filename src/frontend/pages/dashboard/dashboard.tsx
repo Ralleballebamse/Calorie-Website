@@ -1,6 +1,6 @@
-import "../App.css"
-import Header from "../Components/header";
-import Footer from "../Components/footer";
+import "../../App.css"
+import Header from "../../Components/header";
+import Footer from "../../Components/footer";
 import { useState } from "react";
 import {
     AreaChart,

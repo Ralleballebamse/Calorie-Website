@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "nodemon src/backend/server.cjs",
+    "frontend": "vite"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.3",
@@ -27,6 +29,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",

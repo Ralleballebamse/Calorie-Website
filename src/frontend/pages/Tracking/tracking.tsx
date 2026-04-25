@@ -1,6 +1,6 @@
-import "../App.css"
-import Header from "../Components/header";
-import Footer from "../Components/footer";
+import "../../App.css"
+import Header from "../../Components/header";
+import Footer from "../../Components/footer";
 
 function DashBoard() {
     return (
