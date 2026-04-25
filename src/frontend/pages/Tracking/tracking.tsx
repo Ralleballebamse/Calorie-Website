@@ -1,17 +1,55 @@
 import "../../App.css"
 import Header from "../../Components/header";
 import Footer from "../../Components/footer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Tracking() {
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    const [stats, setStats] = useState({
+        currentWeight: 0,
+        weeklyChange: 0,
+        goalProgress: 0,
+    });
+
+    const [history, setHistory] = useState<any[]>([]);
 
     const [weight, setWeight] = useState("");
     const [date, setDate] = useState("");
     const [notes, setNotes] = useState("");
 
+    const [showAll, setShowAll] = useState(false);
+
+    const visibleHistory = showAll ? history : history.slice(0, 8);
+
+    const fetchDashboardData = async () => {
+        const response = await fetch("http://localhost:5000/api/weights/dashboard", {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            setStats(data.stats);
+            setHistory(data.history);
+        }
+    };
+
     const handleSave = async () => {
         try {
             const token = localStorage.getItem("token");
+
+            const weightNumber = Number(weight);
+
+            if (!weight || weightNumber < 30 || weightNumber > 300) {
+                alert("Please enter a realistic weight between 30 and 300 kg.");
+                return;
+            }
 
             const response = await fetch("http://localhost:5000/api/weights", {
                 method: "POST",
@@ -40,6 +78,8 @@ function Tracking() {
             setDate("");
             setNotes("");
 
+            fetchDashboardData();
+
         } catch (error) {
             console.error(error);
         }
@@ -65,6 +105,9 @@ function Tracking() {
                             <h3>Weight Value</h3>
                             <input
                                 type="number"
+                                min="30"
+                                max="300"
+                                step="0.1"
                                 placeholder="00.00"
                                 value={weight}
                                 onChange={(e) => setWeight(e.target.value)}
@@ -115,7 +158,7 @@ function Tracking() {
                         <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
                             <h3 className="text-2xl">Current Weight</h3>
                             <div className="flex items-end gap-1">
-                                <span className="text-2xl font-bold">62.2</span>
+                                <span className="text-2xl font-bold">{stats.currentWeight}</span>
                                 <span className="text-sm self-end">kg</span>
                             </div>
                         </div>
@@ -123,7 +166,10 @@ function Tracking() {
                         <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
                             <h3 className="text-2xl">Weekly Change</h3>
                             <div className="flex items-end gap-1">
-                                <span className="text-2xl font-bold">+0.8</span>
+                                <span className="text-2xl font-bold">
+                                    {stats.weeklyChange > 0 ? "+" : ""}
+                                    {stats.weeklyChange}
+                                </span>
                                 <span className="text-sm self-end">kg</span>
                             </div>
                         </div>
@@ -131,10 +177,13 @@ function Tracking() {
                         <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
                             <h3 className="text-2xl">Goal Progress</h3>
                             <div className="flex">
-                                <h3 className="text-2xl font-bold">82%</h3>
+                                <h3 className="text-2xl font-bold">{stats.goalProgress}%</h3>
                             </div>
                             <div className="h-1 w-full bg-black/20 rounded-full overflow-hidden">
-                                <div className="h-full w-82/100 bg-[#3e5d48] rounded-full"></div>
+                                <div
+                                    className="h-full bg-[#3e5d48] rounded-full"
+                                    style={{ width: `${stats.goalProgress}%` }}
+                                ></div>
                             </div>
                         </div>
                     </div>
@@ -143,68 +192,58 @@ function Tracking() {
                         <div>
                             <h2 className="text-2xl font-bold py-5">Weight History</h2>
 
-                            <section className="flex">
-                                {/* Date */}
-                                <div className="w-1/5">
-                                    <h2 className="text-xl">DATE</h2>
-                                    <section className="flex flex-col gap-10 pt-5">
-                                        <h3>2023-10-24</h3>
-                                        <h3>2023-10-23</h3>
-                                        <h3>2023-10-22</h3>
-                                        <h3>2023-10-20</h3>
-                                        <h3>2023-10-24</h3>
-                                        <h3>2023-10-23</h3>
-                                        <h3>2023-10-22</h3>
-                                        <h3>2023-10-20</h3>
-                                    </section>
+                            <section>
+                                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] text-xl mb-5">
+                                    <h2>DATE</h2>
+                                    <h2>WEIGHT</h2>
+                                    <h2>CHANGE</h2>
+                                    <h2>NOTES</h2>
                                 </div>
 
-                                {/* Weight */}
-                                <div className="w-1/5">
-                                    <h2 className="text-xl">WEIGHT</h2>
-                                    <section className="flex flex-col gap-10 pt-5">
-                                        <h3>63.7 kg</h3>
-                                        <h3>64.7 kg</h3>
-                                        <h3>64.7 kg</h3>
-                                        <h3>65.9 kg</h3>
-                                        <h3>63.7 kg</h3>
-                                        <h3>64.7 kg</h3>
-                                        <h3>64.7 kg</h3>
-                                        <h3>65.9 kg</h3>
-                                    </section>
-                                </div>
+                                <div className="flex flex-col gap-8">
+                                    {visibleHistory.map((entry) => (
+                                        <div
+                                            key={entry._id}
+                                            className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 items-start"
+                                        >
+                                            <h3 className="min-w-0 break-words overflow-wrap-anywhere">
+                                                {new Date(entry.date).toISOString().split("T")[0]}
+                                            </h3>
 
-                                {/* Change */}
-                                <div className="w-1/5">
-                                    <h2 className="text-xl">CHANGE</h2>
-                                    <section className="flex flex-col gap-10 pt-5">
-                                        <h3 className="text-red-500">↓ -1.5 kg</h3>
-                                        <h3 className="text-[#116a2aca]">↑ + 1 kg</h3>
-                                        <h3>– 0.0 kg</h3>
-                                        <h3 className="text-[#116a2aca]">↑ + 1.2 kg</h3>
-                                        <h3 className="text-red-500">↓ -1.5 kg</h3>
-                                        <h3 className="text-[#116a2aca]">↑ + 1 kg</h3>
-                                        <h3>– 0.0 kg</h3>
-                                        <h3 className="text-[#116a2aca]">↑ + 1.2 kg</h3>
-                                    </section>
-                                </div>
+                                            <h3 className="min-w-0 break-words">
+                                                {entry.weight} kg
+                                            </h3>
 
-                                {/* Notes */}
-                                <div className="w-2/5">
-                                    <h2 className="text-xl">NOTES</h2>
-                                    <section className="flex flex-col gap-10 pt-5">
-                                        <h3 >I trained alot and lost weight.</h3>
-                                        <h3 >Did less training and ate more.</h3>
-                                        <h3>Did not anything special.</h3>
-                                        <h3 >–</h3>
-                                        <h3 >I trained alot and lost weight.</h3>
-                                        <h3 >Did less training and ate more.</h3>
-                                        <h3>Did not anything special.</h3>
-                                        <h3 >–</h3>
-                                    </section>
+                                            <h3
+                                                className={`min-w-0 break-words ${entry.change < 0
+                                                        ? "text-red-500"
+                                                        : entry.change > 0
+                                                            ? "text-[#116a2aca]"
+                                                            : ""
+                                                    }`}
+                                            >
+                                                {entry.change < 0
+                                                    ? `↓ ${entry.change} kg`
+                                                    : entry.change > 0
+                                                        ? `↑ +${entry.change} kg`
+                                                        : "– 0.0 kg"}
+                                            </h3>
+
+                                            <h3 className="min-w-0 break-words whitespace-pre-wrap">
+                                                {entry.notes || "–"}
+                                            </h3>
+                                        </div>
+                                    ))}
                                 </div>
                             </section>
-                            <button className="w-[calc(100%+2.5rem)] -mx-5 border-t-2 mt-10 py-2 border-[#bad7c3] hover:bg-[#bad7c3] hover:rounded-b-2xl">View Full History</button>
+                            {history.length >= 8 && (
+                                <button
+                                    onClick={() => setShowAll(!showAll)}
+                                    className="w-[calc(100%+2.5rem)] -mx-5 border-t-2 mt-10 py-2 border-[#bad7c3] hover:bg-[#bad7c3] hover:rounded-b-2xl"
+                                >
+                                    {showAll ? "Show Less" : "View Full History"}
+                                </button>
+                            )}
                         </div>
                     </div>
 
