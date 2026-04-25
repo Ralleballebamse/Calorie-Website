@@ -2,8 +2,12 @@ import "./index.css";
 import Header from "./Components/header";
 import Footer from "./Components/footer";
 import StartYourProfile from "./Components/startYourProfile";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
       <Header />
@@ -20,8 +24,12 @@ function LoginPage() {
               designed for holistic clarity.
             </p>
             <nav className="flex gap-5">
-              <button className="bg-[#1B3022] text-white h-14 w-50 text-2xl rounded-2xl">Get Started</button>
-              <button className="bg-[#bfcec0] text-[#3e5d48] h-14 w-50 text-2xl rounded-2xl">Log In</button>
+              <button
+                onClick={() => navigate("/create")}
+                className="bg-[#1B3022] text-white h-14 w-50 text-2xl rounded-2xl">Get Started</button>
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-[#bfcec0] text-[#3e5d48] h-14 w-50 text-2xl rounded-2xl">Log In</button>
             </nav>
           </div>
           <img src="Pictures/HeadPicture.png" alt="Statistics about weighlosing" className="rounded-2xl" />

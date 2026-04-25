@@ -1,6 +1,9 @@
-
+import { useNavigate } from "react-router-dom";
 
 function StartYourProfile() {
+
+    const navigate = useNavigate();
+
     return (
         <div>
             <div className="flex flex-col items-center bg-[#1B3D34] py-10 rounded-3xl">
@@ -8,7 +11,9 @@ function StartYourProfile() {
                     <h2 className="font-bold text-4xl text-white">Ready to reach your target?</h2>
                     <p className="text-[#8BA88E]">Join thousands of users who have transformed their relationship
                         with health through precise data and clinical insight.</p>
-                    <button className="text-[#1B3D34] bg-white font-bold h-15 w-55 rounded-2xl self-center text-xl">Start Your Profile</button>
+                    <button
+                        onClick={() => navigate("/create")}
+                        className="text-[#1B3D34] bg-white font-bold h-15 w-55 rounded-2xl self-center text-xl">Start Your Profile</button>
                 </div>
             </div>
         </div>
