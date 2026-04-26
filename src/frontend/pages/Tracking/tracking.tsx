@@ -7,6 +7,7 @@ function Tracking() {
 
     useEffect(() => {
         fetchDashboardData();
+        fetchGoals();
     }, []);
 
     const [stats, setStats] = useState({
@@ -28,6 +29,9 @@ function Tracking() {
     const [showAll, setShowAll] = useState(false);
 
     const visibleHistory = showAll ? history : history.slice(0, 8);
+
+    const [goals, setGoals] = useState<any[]>([]);
+    const [showAllGoals, setShowAllGoals] = useState(false);
 
     const fetchDashboardData = async () => {
         const response = await fetch("http://localhost:5000/api/weights/dashboard", {
@@ -118,12 +122,29 @@ function Tracking() {
             setTargetDate("");
 
             fetchDashboardData();
+            fetchGoals();
 
             alert("Goal saved!");
         } catch (error) {
             console.error(error);
         }
     };
+
+    const fetchGoals = async () => {
+        const response = await fetch("http://localhost:5000/api/goals", {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            setGoals(data.goals);
+        }
+    };
+
+    const visibleGoals = showAllGoals ? goals : goals.slice(0, 3);
 
     return (
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
@@ -334,6 +355,49 @@ function Tracking() {
                                 </button>
                             )}
                         </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl pb-0 p-5">
+                        <h2 className="text-2xl font-bold py-5">Goal History</h2>
+
+                        <section>
+                            <div className="grid grid-cols-[1fr_1fr_1fr_1fr] text-xl mb-5">
+                                <h2>START</h2>
+                                <h2>TARGET</h2>
+                                <h2>TARGET DATE</h2>
+                                <h2>STATUS</h2>
+                            </div>
+
+                            <div className="flex flex-col gap-8">
+                                {visibleGoals.map((goal) => (
+                                    <div
+                                        key={goal._id}
+                                        className="grid grid-cols-[1fr_1fr_1fr_1fr] items-start"
+                                    >
+                                        <h3>{goal.startWeight} kg</h3>
+                                        <h3>{goal.targetWeight} kg</h3>
+                                        <h3>{new Date(goal.targetDate).toISOString().split("T")[0]}</h3>
+
+                                        <h3
+                                            className={
+                                                goal.isActive ? "text-[#116a2aca] font-bold" : "text-gray-500"
+                                            }
+                                        >
+                                            {goal.isActive ? "Active" : "Old goal"}
+                                        </h3>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {goals.length >= 3 && (
+                                <button
+                                    onClick={() => setShowAllGoals(!showAllGoals)}
+                                    className="w-[calc(100%+2.5rem)] -mx-5 border-t-2 mt-10 py-2 border-[#bad7c3] hover:bg-[#bad7c3] hover:rounded-b-2xl"
+                                >
+                                    {showAllGoals ? "Show Less" : "View Full Goal History"}
+                                </button>
+                            )}
+                        </section>
                     </div>
 
                     <section className="w-full bg-[url('/Pictures/Pray.png')] bg-cover bg-center text-white text-center p-10 rounded-2xl">
