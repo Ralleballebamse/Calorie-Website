@@ -1,4 +1,5 @@
 const WeightEntry = require("../models/WeightEntry.cjs");
+const Goal = require("../models/Goal.cjs");
 
 function startOfWeek(date) {
     const d = new Date(date);
@@ -65,7 +66,21 @@ async function getDashboardData(req, res) {
             (latest.weight - entries[0].weight).toFixed(1)
         );
 
-        const goalProgress = 65; // temporary until you add goal weight
+        const goal = await Goal.findOne({
+            userId: req.userId,
+            isActive: true,
+        }).sort({ createdAt: -1 });
+
+        let goalProgress = 0;
+
+        if (goal && currentWeight) {
+            const progress =
+                ((goal.startWeight - currentWeight) /
+                    (goal.startWeight - goal.targetWeight)) *
+                100;
+
+            goalProgress = Math.max(0, Math.min(100, Math.round(progress)));
+        }
 
         const trend =
             yesterdayChange < 0
