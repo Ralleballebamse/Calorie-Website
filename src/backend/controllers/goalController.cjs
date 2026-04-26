@@ -121,7 +121,7 @@ async function updateGoal(req, res) {
                 targetDate,
             },
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             }
         );

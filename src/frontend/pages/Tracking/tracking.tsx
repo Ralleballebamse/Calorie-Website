@@ -36,6 +36,11 @@ function Tracking() {
     const [weightEditMode, setWeightEditMode] = useState(false);
     const [goalEditMode, setGoalEditMode] = useState(false);
 
+    const [editingWeightId, setEditingWeightId] = useState<string | null>(null);
+    const [editWeight, setEditWeight] = useState("");
+    const [editDate, setEditDate] = useState("");
+    const [editNotes, setEditNotes] = useState("");
+
     const fetchDashboardData = async () => {
         const response = await fetch("http://localhost:5000/api/weights/dashboard", {
             headers: {
@@ -191,6 +196,38 @@ function Tracking() {
         }
 
         fetchGoals();
+        fetchDashboardData();
+    };
+
+    const startEditWeight = (entry: any) => {
+        setEditingWeightId(entry._id);
+        setEditWeight(String(entry.weight));
+        setEditDate(new Date(entry.date).toISOString().split("T")[0]);
+        setEditNotes(entry.notes || "");
+    };
+
+    const handleUpdateWeight = async (id: string) => {
+        const response = await fetch(`http://localhost:5000/api/weights/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({
+                weight: Number(editWeight),
+                date: editDate,
+                notes: editNotes,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
+        setEditingWeightId(null);
         fetchDashboardData();
     };
 
@@ -383,48 +420,92 @@ function Tracking() {
                                         >
                                             {weightEditMode && (
                                                 <div className="flex gap-3 items-center">
-                                                    <button
-                                                        type="button"
-                                                        className="w-6 h-6 flex items-center justify-center rounded-lg bg-[#116a2aca] text-white hover:bg-[#0d5422] transition"
-                                                    >
-                                                        <i className="fa-solid fa-pen text-sm"></i>
-                                                    </button>
+                                                    {editingWeightId === entry._id ? (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleUpdateWeight(entry._id)}
+                                                                className="text-[#116a2aca] font-bold hover:underline"
+                                                            >
+                                                                Save
+                                                            </button>
 
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDeleteWeight(entry._id)}
-                                                        className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
-                                                    >
-                                                        <i className="fa-solid fa-xmark text-lg"></i>
-                                                    </button>
+                                                            <button
+                                                                onClick={() => setEditingWeightId(null)}
+                                                                className="text-red-500 font-bold hover:underline"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => startEditWeight(entry)}
+                                                                className="w-6 h-6 flex items-center justify-center rounded-lg bg-[#116a2aca] text-white hover:bg-[#0d5422]"
+                                                            >
+                                                                <i className="fa-solid fa-pen text-sm"></i>
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleDeleteWeight(entry._id)}
+                                                                className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600"
+                                                            >
+                                                                <i className="fa-solid fa-xmark text-lg"></i>
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </div>
                                             )}
-                                            <h3 className="min-w-0 wrap-break-word overflow-wrap-anywhere">
-                                                {new Date(entry.date).toISOString().split("T")[0]}
-                                            </h3>
+                                            {editingWeightId === entry._id ? (
+                                                <>
+                                                    <input
+                                                        type="date"
+                                                        value={editDate}
+                                                        onChange={(e) => setEditDate(e.target.value)}
+                                                        className="bg-blue-100 rounded-lg p-2 outline-none"
+                                                    />
 
-                                            <h3 className="min-w-0 wrap-break-word">
-                                                {entry.weight} kg
-                                            </h3>
+                                                    <input
+                                                        type="number"
+                                                        value={editWeight}
+                                                        onChange={(e) => setEditWeight(e.target.value)}
+                                                        className="bg-blue-100 rounded-lg p-2 outline-none"
+                                                    />
 
-                                            <h3
-                                                className={`min-w-0 wrap-break-word ${entry.change < 0
-                                                    ? "text-red-500"
-                                                    : entry.change > 0
-                                                        ? "text-[#116a2aca]"
-                                                        : ""
-                                                    }`}
-                                            >
-                                                {entry.change < 0
-                                                    ? `↓ ${entry.change} kg`
-                                                    : entry.change > 0
-                                                        ? `↑ +${entry.change} kg`
-                                                        : "– 0.0 kg"}
-                                            </h3>
+                                                    <h3 className="text-gray-500">Editing</h3>
 
-                                            <h3 className="min-w-0 wrap-break-word whitespace-pre-wrap">
-                                                {entry.notes || "–"}
-                                            </h3>
+                                                    <input
+                                                        value={editNotes}
+                                                        onChange={(e) => setEditNotes(e.target.value)}
+                                                        className="bg-blue-100 rounded-lg p-2 outline-none"
+                                                    />
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <h3>{new Date(entry.date).toISOString().split("T")[0]}</h3>
+
+                                                    <h3>{entry.weight} kg</h3>
+
+                                                    <h3
+                                                        className={
+                                                            entry.change < 0
+                                                                ? "text-red-500"
+                                                                : entry.change > 0
+                                                                    ? "text-[#116a2aca]"
+                                                                    : ""
+                                                        }
+                                                    >
+                                                        {entry.change < 0
+                                                            ? `↓ ${entry.change} kg`
+                                                            : entry.change > 0
+                                                                ? `↑ +${entry.change} kg`
+                                                                : "– 0.0 kg"}
+                                                    </h3>
+
+                                                    <h3>{entry.notes || "–"}</h3>
+                                                </>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

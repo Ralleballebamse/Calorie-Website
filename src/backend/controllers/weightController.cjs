@@ -100,7 +100,7 @@ async function updateWeightEntry(req, res) {
                 notes,
             },
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             }
         );
