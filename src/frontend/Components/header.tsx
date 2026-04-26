@@ -30,7 +30,7 @@ function Header() {
           onClick={() => navigate("/")}
           className={
             isActive("/")
-              ? "!text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
+              ? "text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
               : ""
           }
         >
@@ -41,7 +41,7 @@ function Header() {
           onClick={() => navigate("/dashboard")}
           className={
             isActive("/dashboard")
-              ? "!text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
+              ? "text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
               : ""
           }
         >
@@ -52,7 +52,7 @@ function Header() {
           onClick={() => navigate("/tracking")}
           className={
             isActive("/tracking")
-              ? "!text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
+              ? "text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
               : ""
           }
         >
