@@ -97,9 +97,52 @@ async function deleteGoal(req, res) {
     }
 }
 
+async function updateGoal(req, res) {
+    try {
+        const { startWeight, targetWeight, targetDate } = req.body;
+
+        const start = Number(startWeight);
+        const target = Number(targetWeight);
+
+        if (!start || !target || !targetDate) {
+            return res.status(400).json({
+                message: "Start weight, target weight, and target date are required",
+            });
+        }
+
+        const goal = await Goal.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                userId: req.userId,
+            },
+            {
+                startWeight: start,
+                targetWeight: target,
+                targetDate,
+            },
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+
+        if (!goal) {
+            return res.status(404).json({ message: "Goal not found" });
+        }
+
+        res.json({
+            message: "Goal updated successfully",
+            goal,
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
 module.exports = {
     saveGoal,
     getActiveGoal,
     getAllGoals,
+    updateGoal,
     deleteGoal,
 };

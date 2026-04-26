@@ -33,6 +33,9 @@ function Tracking() {
     const [goals, setGoals] = useState<any[]>([]);
     const [showAllGoals, setShowAllGoals] = useState(false);
 
+    const [weightEditMode, setWeightEditMode] = useState(false);
+    const [goalEditMode, setGoalEditMode] = useState(false);
+
     const fetchDashboardData = async () => {
         const response = await fetch("http://localhost:5000/api/weights/dashboard", {
             headers: {
@@ -145,6 +148,51 @@ function Tracking() {
     };
 
     const visibleGoals = showAllGoals ? goals : goals.slice(0, 3);
+
+    const handleDeleteWeight = async (id: string) => {
+        const confirmDelete = confirm("Delete this weight entry?");
+
+        if (!confirmDelete) return;
+
+        const response = await fetch(`http://localhost:5000/api/weights/${id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
+        fetchDashboardData();
+    };
+
+    const handleDeleteGoal = async (id: string) => {
+        const confirmDelete = confirm("Delete this goal?");
+
+        if (!confirmDelete) return;
+
+        const response = await fetch(`http://localhost:5000/api/goals/${id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message);
+            return;
+        }
+
+        fetchGoals();
+        fetchDashboardData();
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
@@ -300,10 +348,24 @@ function Tracking() {
 
                     <div className="bg-white rounded-2xl pb-0 p-5">
                         <div>
-                            <h2 className="text-2xl font-bold py-5">Weight History</h2>
+                            <div className="flex justify-between">
+                                <h2 className="text-2xl font-bold py-5">Weight History</h2>
+                                <button
+                                    onClick={() => setWeightEditMode(!weightEditMode)}
+                                    className="text-[#116a2aca] font-bold hover:underline"
+                                >
+                                    {weightEditMode ? "Done" : "Manage"}
+                                </button>
+                            </div>
 
                             <section>
-                                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] text-xl mb-5">
+                                <div
+                                    className={`grid ${weightEditMode
+                                        ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
+                                        : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
+                                        } text-xl mb-5`}
+                                >
+                                    {weightEditMode && <h2>ACTIONS</h2>}
                                     <h2>DATE</h2>
                                     <h2>WEIGHT</h2>
                                     <h2>CHANGE</h2>
@@ -314,8 +376,29 @@ function Tracking() {
                                     {visibleHistory.map((entry) => (
                                         <div
                                             key={entry._id}
-                                            className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)] gap-4 items-start"
+                                            className={`grid ${weightEditMode
+                                                ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
+                                                : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
+                                                } gap-4 items-center`}
                                         >
+                                            {weightEditMode && (
+                                                <div className="flex gap-3 items-center">
+                                                    <button
+                                                        type="button"
+                                                        className="w-6 h-6 flex items-center justify-center rounded-lg bg-[#116a2aca] text-white hover:bg-[#0d5422] transition"
+                                                    >
+                                                        <i className="fa-solid fa-pen text-sm"></i>
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDeleteWeight(entry._id)}
+                                                        className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+                                                    >
+                                                        <i className="fa-solid fa-xmark text-lg"></i>
+                                                    </button>
+                                                </div>
+                                            )}
                                             <h3 className="min-w-0 wrap-break-word overflow-wrap-anywhere">
                                                 {new Date(entry.date).toISOString().split("T")[0]}
                                             </h3>
@@ -358,10 +441,23 @@ function Tracking() {
                     </div>
 
                     <div className="bg-white rounded-2xl pb-0 p-5">
-                        <h2 className="text-2xl font-bold py-5">Goal History</h2>
-
+                        <div className="flex justify-between">
+                            <h2 className="text-2xl font-bold py-5">Goal History</h2>
+                            <button
+                                onClick={() => setGoalEditMode(!goalEditMode)}
+                                className="text-[#116a2aca] font-bold hover:underline"
+                            >
+                                {goalEditMode ? "Done" : "Manage"}
+                            </button>
+                        </div>
                         <section>
-                            <div className="grid grid-cols-[1fr_1fr_1fr_1fr] text-xl mb-5">
+                            <div
+                                className={`grid ${goalEditMode
+                                    ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
+                                    : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
+                                    } text-xl mb-5`}
+                            >
+                                {goalEditMode && <h2>ACTIONS</h2>}
                                 <h2>START</h2>
                                 <h2>TARGET</h2>
                                 <h2>TARGET DATE</h2>
@@ -372,8 +468,21 @@ function Tracking() {
                                 {visibleGoals.map((goal) => (
                                     <div
                                         key={goal._id}
-                                        className="grid grid-cols-[1fr_1fr_1fr_1fr] items-start"
+                                        className={`grid ${goalEditMode
+                                            ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
+                                            : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
+                                            } items-center`}
                                     >
+                                        {goalEditMode && (
+                                            <div className="flex items-center">
+                                                <button
+                                                    onClick={() => handleDeleteGoal(goal._id)}
+                                                    className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+                                                >
+                                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                                </button>
+                                            </div>
+                                        )}
                                         <h3>{goal.startWeight} kg</h3>
                                         <h3>{goal.targetWeight} kg</h3>
                                         <h3>{new Date(goal.targetDate).toISOString().split("T")[0]}</h3>

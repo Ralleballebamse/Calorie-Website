@@ -73,7 +73,71 @@ const getWeightDashboard = async (req, res) => {
     }
 };
 
+async function updateWeightEntry(req, res) {
+    try {
+        const { weight, date, notes } = req.body;
+
+        const weightNumber = Number(weight);
+
+        if (!weightNumber || weightNumber < 30 || weightNumber > 300) {
+            return res.status(400).json({
+                message: "Weight must be between 30 and 300 kg",
+            });
+        }
+
+        if (!date) {
+            return res.status(400).json({ message: "Date is required" });
+        }
+
+        const entry = await WeightEntry.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                userId: req.userId,
+            },
+            {
+                weight: weightNumber,
+                date,
+                notes,
+            },
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+
+        if (!entry) {
+            return res.status(404).json({ message: "Weight entry not found" });
+        }
+
+        res.json({
+            message: "Weight entry updated",
+            entry,
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+async function deleteWeightEntry(req, res) {
+    try {
+        const entry = await WeightEntry.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.userId,
+        });
+
+        if (!entry) {
+            return res.status(404).json({ message: "Weight entry not found" });
+        }
+
+        res.json({ message: "Weight entry deleted" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
 module.exports = {
     createWeightEntry,
     getWeightDashboard,
+    updateWeightEntry,
+    deleteWeightEntry,
 };
