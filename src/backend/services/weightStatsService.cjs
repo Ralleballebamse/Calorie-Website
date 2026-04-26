@@ -60,3 +60,23 @@ module.exports = {
     calculateWeightStats,
     addChangePerEntry,
 };
+
+function calculateGoalProgress(currentWeight, goal) {
+    if (!goal || !currentWeight) return 0;
+
+    const start = goal.startWeight;
+    const target = goal.targetWeight;
+
+    if (start === target) return 0;
+
+    const progress =
+        ((start - currentWeight) / (start - target)) * 100;
+
+    return Math.max(0, Math.min(100, Math.round(progress)));
+}
+
+module.exports = {
+    calculateWeightStats,
+    addChangePerEntry,
+    calculateGoalProgress,
+};

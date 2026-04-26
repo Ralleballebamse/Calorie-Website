@@ -117,6 +117,8 @@ function Tracking() {
             setTargetWeight("");
             setTargetDate("");
 
+            fetchDashboardData();
+
             alert("Goal saved!");
         } catch (error) {
             console.error(error);
@@ -261,9 +263,11 @@ function Tracking() {
 
                         <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
                             <h3 className="text-2xl">Goal Progress</h3>
+
                             <div className="flex">
                                 <h3 className="text-2xl font-bold">{stats.goalProgress}%</h3>
                             </div>
+
                             <div className="h-1 w-full bg-black/20 rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-[#3e5d48] rounded-full"

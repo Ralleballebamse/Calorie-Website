@@ -1,7 +1,10 @@
+const Goal = require("../models/Goal.cjs");
+
 const WeightEntry = require("../models/WeightEntry.cjs");
 const {
     calculateWeightStats,
     addChangePerEntry,
+    calculateGoalProgress,
 } = require("../services/weightStatsService.cjs");
 
 async function createWeightEntry(req, res) {
@@ -36,11 +39,28 @@ async function createWeightEntry(req, res) {
     }
 }
 
-async function getWeightDashboard(req, res) {
+const getWeightDashboard = async (req, res) => {
     try {
-        const entries = await WeightEntry.find({ userId: req.userId });
+        // 1. Get weight entries
+        const entries = await WeightEntry.find({
+            userId: req.userId,
+        }).sort({ date: -1 });
 
+        // 2. Get active goal
+        const goal = await Goal.findOne({
+            userId: req.userId,
+            isActive: true,
+        }).sort({ createdAt: -1 });
+
+        // 3. Calculate stats
         const stats = calculateWeightStats(entries);
+
+        stats.goalProgress = calculateGoalProgress(
+            stats.currentWeight,
+            goal
+        );
+
+        // 4. Add change per entry (for history table)
         const history = addChangePerEntry(entries);
 
         res.json({
@@ -48,9 +68,10 @@ async function getWeightDashboard(req, res) {
             history,
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: "Server error" });
     }
-}
+};
 
 module.exports = {
     createWeightEntry,
