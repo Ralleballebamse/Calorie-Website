@@ -15,6 +15,10 @@ function Tracking() {
         goalProgress: 0,
     });
 
+    const [startWeight, setStartWeight] = useState("");
+    const [targetWeight, setTargetWeight] = useState("");
+    const [targetDate, setTargetDate] = useState("");
+
     const [history, setHistory] = useState<any[]>([]);
 
     const [weight, setWeight] = useState("");
@@ -85,6 +89,40 @@ function Tracking() {
         }
     };
 
+    const handleSaveGoal = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/api/goals", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    startWeight: Number(startWeight),
+                    targetWeight: Number(targetWeight),
+                    targetDate,
+                }),
+            });
+
+            const data = await response.json();
+
+            console.log("Goal response:", data);
+
+            if (!response.ok) {
+                alert(data.message);
+                return;
+            }
+
+            setStartWeight("");
+            setTargetWeight("");
+            setTargetDate("");
+
+            alert("Goal saved!");
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
             <Header />
@@ -135,6 +173,53 @@ function Tracking() {
                         <button
                             onClick={handleSave}
                             className="bg-[#1B3022] rounded-2xl text-white h-10 hover:bg-[#3b674a]">+ Save Entry</button>
+                    </div>
+
+                    <div className="bg-white flex flex-col gap-5 p-5 rounded-xl mt-5">
+                        <h2 className="text-xl font-bold">Set Goal</h2>
+
+                        <section>
+                            <h3>Start Weight</h3>
+                            <input
+                                type="number"
+                                min="30"
+                                max="300"
+                                step="0.1"
+                                placeholder="Example: 80"
+                                value={startWeight}
+                                onChange={(e) => setStartWeight(e.target.value)}
+                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
+                            />
+                        </section>
+
+                        <section>
+                            <h3>Target Weight</h3>
+                            <input
+                                type="number"
+                                min="30"
+                                max="300"
+                                step="0.1"
+                                placeholder="Example: 70"
+                                value={targetWeight}
+                                onChange={(e) => setTargetWeight(e.target.value)}
+                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
+                            />
+                        </section>
+
+                        <section>
+                            <h3>Target Date</h3>
+                            <input
+                                type="date"
+                                value={targetDate}
+                                onChange={(e) => setTargetDate(e.target.value)}
+                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
+                            />
+                        </section>
+
+                        <button
+                            onClick={handleSaveGoal}
+                            className="bg-[#1B3022] rounded-2xl text-white h-10 hover:bg-[#3b674a]">
+                            Save Goal</button>
                     </div>
 
                     <div className="bg-[#e2ece2] flex flex-col p-5 mt-5 rounded-2xl">
@@ -216,10 +301,10 @@ function Tracking() {
 
                                             <h3
                                                 className={`min-w-0 wrap-break-word ${entry.change < 0
-                                                        ? "text-red-500"
-                                                        : entry.change > 0
-                                                            ? "text-[#116a2aca]"
-                                                            : ""
+                                                    ? "text-red-500"
+                                                    : entry.change > 0
+                                                        ? "text-[#116a2aca]"
+                                                        : ""
                                                     }`}
                                             >
                                                 {entry.change < 0
