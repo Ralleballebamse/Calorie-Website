@@ -4,7 +4,7 @@ import Footer from "./Components/footer";
 import StartYourProfile from "./Components/startYourProfile";
 import { useNavigate } from "react-router-dom";
 
-function LoginPage() {
+function HomePage() {
 
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ function LoginPage() {
           <div className="flex flex-col gap-10 max-w-1/2">
             <div className="flex gap-2 bg-[#bfcec0] rounded-xl justify-center items-center w-1/2">
               <i className="fa-solid fa-shield-heart"></i>
-              <p>Precision Wellness Monitering</p>
+              <p>Precision Wellness Monitoring</p>
             </div>
             <h2 className="text-5xl font-bold">Track Your Journey, Transform Your Health</h2>
             <p>The professional way to monitor your progress and achieve your wellness goals.
@@ -127,4 +127,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default HomePage;
