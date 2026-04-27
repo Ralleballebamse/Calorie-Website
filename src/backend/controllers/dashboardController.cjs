@@ -1,6 +1,7 @@
 const WeightEntry = require("../models/WeightEntry.cjs");
 const Goal = require("../models/Goal.cjs");
 
+// Returns the Monday date for the week that the given date belongs to
 function startOfWeek(date) {
     const d = new Date(date);
     const day = d.getDay(); // Sunday = 0
@@ -10,10 +11,12 @@ function startOfWeek(date) {
     return d;
 }
 
+// Formats a date into YYYY-MM-DD format
 function formatDate(date) {
     return new Date(date).toISOString().split("T")[0];
 }
 
+// Converts an entry creation date into a user-friendly activity time
 function formatActivityTime(date) {
     const now = new Date();
     const entryDate = new Date(date);
@@ -33,12 +36,15 @@ function formatActivityTime(date) {
     return "1 week ago";
 }
 
+// Builds all dashboard data for the logged-in user
 async function getDashboardData(req, res) {
     try {
+        // Get all weight entries for this user, oldest first
         const entries = await WeightEntry.find({ userId: req.userId }).sort({
             date: 1,
         });
 
+        // Return empty dashboard values if the user has no entries yet
         if (entries.length === 0) {
             return res.json({
                 currentWeight: 0,
@@ -53,19 +59,23 @@ async function getDashboardData(req, res) {
             });
         }
 
+        // Latest and previous entries are used for current stats
         const latest = entries[entries.length - 1];
         const previous = entries[entries.length - 2];
 
         const currentWeight = latest.weight;
 
+        // Difference between latest entry and previous entry
         const yesterdayChange = previous
             ? Number((latest.weight - previous.weight).toFixed(1))
             : 0;
 
+        // Difference between first entry and latest entry
         const totalProgress = Number(
             (latest.weight - entries[0].weight).toFixed(1)
         );
 
+        // Get the user's active goal for goal progress calculation
         const goal = await Goal.findOne({
             userId: req.userId,
             isActive: true,
@@ -73,6 +83,7 @@ async function getDashboardData(req, res) {
 
         let goalProgress = 0;
 
+        // Calculate goal progress as a percentage and clamp it between 0 and 100
         if (goal && currentWeight) {
             const progress =
                 ((goal.startWeight - currentWeight) /
@@ -82,6 +93,7 @@ async function getDashboardData(req, res) {
             goalProgress = Math.max(0, Math.min(100, Math.round(progress)));
         }
 
+        // Create a simple trend label based on the latest weight change
         const trend =
             yesterdayChange < 0
                 ? "Steady Decrease"
@@ -89,6 +101,7 @@ async function getDashboardData(req, res) {
                     ? "Increasing"
                     : "Stable";
 
+        // Create the text shown under the weekly trend card
         const weeklyTrendText =
             yesterdayChange < 0
                 ? `Your weight dropped by ${Math.abs(yesterdayChange)} kg compared to your last log.`
@@ -96,11 +109,13 @@ async function getDashboardData(req, res) {
                     ? `Your weight increased by ${yesterdayChange} kg compared to your last log.`
                     : "Your weight stayed stable compared to your last log.";
 
+        // Find the start and end date of the current week
         const weekStart = startOfWeek(new Date());
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 6);
         weekEnd.setHours(23, 59, 59, 999);
 
+        // Build chart data for entries from the current week
         const weeklyChart = entries
             .filter((entry) => {
                 const d = new Date(entry.date);
@@ -113,8 +128,7 @@ async function getDashboardData(req, res) {
                 weight: entry.weight,
             }));
 
-        const currentYear = new Date().getFullYear();
-
+        // Build chart data for the last 30 days
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         thirtyDaysAgo.setHours(0, 0, 0, 0);
@@ -132,6 +146,7 @@ async function getDashboardData(req, res) {
                 weight: entry.weight,
             }));
 
+        // Get the 4 most recently created entries for the recent activity list
         const recentActivity = [...entries]
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 4)
@@ -150,6 +165,7 @@ async function getDashboardData(req, res) {
                 };
             });
 
+        // Send all calculated dashboard values to the frontend
         res.json({
             currentWeight,
             yesterdayChange,
