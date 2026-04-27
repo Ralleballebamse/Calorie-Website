@@ -416,7 +416,7 @@ function Tracking() {
                                             className={`grid ${weightEditMode
                                                 ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
                                                 : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
-                                                } gap-4 items-center`}
+                                                } items-center`}
                                         >
                                             {weightEditMode && (
                                                 <div className="flex gap-3 items-center">
