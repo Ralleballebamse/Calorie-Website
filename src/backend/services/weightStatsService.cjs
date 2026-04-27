@@ -1,3 +1,4 @@
+// Calculate summary stats for the tracking page
 function calculateWeightStats(entries) {
     if (entries.length === 0) {
         return {
@@ -7,6 +8,7 @@ function calculateWeightStats(entries) {
         };
     }
 
+    // Sort entries newest first to find the latest weight
     const sortedNewestFirst = [...entries].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
     );
@@ -14,6 +16,7 @@ function calculateWeightStats(entries) {
     const latestEntry = sortedNewestFirst[0];
     const currentWeight = latestEntry.weight;
 
+    // Find an entry from at least 7 days before the latest entry
     const sevenDaysBeforeLatest = new Date(latestEntry.date);
     sevenDaysBeforeLatest.setDate(sevenDaysBeforeLatest.getDate() - 7);
 
@@ -21,6 +24,7 @@ function calculateWeightStats(entries) {
         (entry) => new Date(entry.date) <= sevenDaysBeforeLatest
     );
 
+    // Calculate weight difference compared to roughly one week ago
     const weeklyChange = weekOldEntry
         ? Number((currentWeight - weekOldEntry.weight).toFixed(1))
         : 0;
@@ -28,11 +32,13 @@ function calculateWeightStats(entries) {
     return {
         currentWeight,
         weeklyChange,
-        goalProgress: 82, // temporary until you add goal weight
+        goalProgress: 0,
     };
 }
 
+// Add a change value to every weight entry for the history table
 function addChangePerEntry(entries) {
+    // Sort oldest first so each entry can compare against the previous one
     const sortedOldestFirst = [...entries].sort(
         (a, b) => new Date(a.date) - new Date(b.date)
     );
@@ -53,14 +59,11 @@ function addChangePerEntry(entries) {
         };
     });
 
+    // Return newest first for display in the frontend
     return withChanges.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
-module.exports = {
-    calculateWeightStats,
-    addChangePerEntry,
-};
-
+// Calculate how far the user has progressed toward their active goal
 function calculateGoalProgress(currentWeight, goal) {
     if (!goal || !currentWeight) return 0;
 
@@ -72,6 +75,7 @@ function calculateGoalProgress(currentWeight, goal) {
     const progress =
         ((start - currentWeight) / (start - target)) * 100;
 
+    // Keep progress between 0% and 100%
     return Math.max(0, Math.min(100, Math.round(progress)));
 }
 
