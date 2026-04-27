@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Schema for storing individual weight log entries
 const weightEntrySchema = new mongoose.Schema(
   {
     userId: {

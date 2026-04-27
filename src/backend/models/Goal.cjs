@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Schema for user goals (weight targets)
 const goalSchema = new mongoose.Schema(
     {
         userId: {
@@ -35,6 +36,7 @@ const goalSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Index to quickly find the active goal for a user
 goalSchema.index({ userId: 1, isActive: 1 });
 
 module.exports = mongoose.model("Goal", goalSchema);
