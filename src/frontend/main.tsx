@@ -3,7 +3,10 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import './index.css'
 import HomePage from "./homePage.tsx";
-import LoginPage from './loginpage/loginpage'
+import LoginAccount from './pages/authPage/loginAccount.tsx';
+import CreateAccount from './pages/authPage/createAccount.tsx';
+import DashBoard from "./pages/dashboard/dashboard.tsx";
+import Tracking from "./pages/Tracking/tracking.tsx";
 
 const router = createBrowserRouter([
   {
@@ -14,8 +17,20 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <LoginPage />,
-      }
+        element: <LoginAccount />,
+      },
+      {
+        path: "/create",
+        element: <CreateAccount />,
+      },
+      {
+        path: "/dashboard",
+        element: <DashBoard />,
+      },
+      {
+        path: "/tracking",
+        element: <Tracking />,
+      },
     ],
   },
 ]);
