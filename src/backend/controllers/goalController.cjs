@@ -1,30 +1,36 @@
 const Goal = require("../models/Goal.cjs");
 
+// Create a new goal for the logged-in user
 async function saveGoal(req, res) {
     try {
         const { startWeight, targetWeight, targetDate } = req.body;
 
+        // Convert incoming values to numbers before validating/saving
         const start = Number(startWeight);
         const target = Number(targetWeight);
 
+        // Make sure all required fields are included
         if (!start || !target || !targetDate) {
             return res.status(400).json({
                 message: "Start weight, target weight, and target date are required",
             });
         }
 
+        // Keep weight values within realistic limits
         if (start < 30 || start > 300 || target < 30 || target > 300) {
             return res.status(400).json({
                 message: "Weight values must be between 30 and 300 kg",
             });
         }
 
+        // A goal needs an actual difference between start and target
         if (start === target) {
             return res.status(400).json({
                 message: "Start weight and target weight cannot be the same",
             });
         }
 
+        // Validate the target date before saving
         const parsedTargetDate = new Date(targetDate);
 
         if (Number.isNaN(parsedTargetDate.getTime())) {
@@ -33,11 +39,13 @@ async function saveGoal(req, res) {
             });
         }
 
+        // Deactivate any previous active goals for this user
         await Goal.updateMany(
             { userId: req.userId, isActive: true },
             { isActive: false }
         );
 
+        // Save the new goal as the active goal
         const goal = await Goal.create({
             userId: req.userId,
             startWeight: start,
@@ -55,6 +63,7 @@ async function saveGoal(req, res) {
     }
 }
 
+// Get the currently active goal for the logged-in user
 async function getActiveGoal(req, res) {
     try {
         const goal = await Goal.findOne({
@@ -68,6 +77,7 @@ async function getActiveGoal(req, res) {
     }
 }
 
+// Get all goals created by the logged-in user
 async function getAllGoals(req, res) {
     try {
         const goals = await Goal.find({ userId: req.userId }).sort({
@@ -80,6 +90,7 @@ async function getAllGoals(req, res) {
     }
 }
 
+// Delete one goal, but only if it belongs to the logged-in user
 async function deleteGoal(req, res) {
     try {
         const goal = await Goal.findOneAndDelete({
@@ -97,6 +108,7 @@ async function deleteGoal(req, res) {
     }
 }
 
+// Update one goal, but only if it belongs to the logged-in user
 async function updateGoal(req, res) {
     try {
         const { startWeight, targetWeight, targetDate } = req.body;
@@ -104,12 +116,14 @@ async function updateGoal(req, res) {
         const start = Number(startWeight);
         const target = Number(targetWeight);
 
+        // Basic validation before updating the goal
         if (!start || !target || !targetDate) {
             return res.status(400).json({
                 message: "Start weight, target weight, and target date are required",
             });
         }
 
+        // Find the goal by ID and userId so users cannot update someone else's goal
         const goal = await Goal.findOneAndUpdate(
             {
                 _id: req.params.id,
