@@ -1,6 +1,11 @@
 import "../../App.css"
 import Header from "../../Components/header";
 import Footer from "../../Components/footer";
+import WeightHistory from "./Components/WeightHistory";
+import GoalHistory from "./Components/GoalHistory";
+import WeightForm from "./Components/WeightForm";
+import GoalForm from "./Components/GoalForm";
+import StatsCards from "./Components/StatsCards";
 import { useEffect, useState } from "react";
 
 function Tracking() {
@@ -43,6 +48,8 @@ function Tracking() {
 
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState<"success" | "error">("success");
+
+    const [pendingGoalAction, setPendingGoalAction] = useState<string | null>(null);
 
     const [pendingWeightAction, setPendingWeightAction] = useState<{
         id: string;
@@ -95,9 +102,6 @@ function Tracking() {
                 return;
             }
 
-            console.log("Saved:", data);
-
-            // clear inputs after save
             setWeight("");
             setDate("");
             setNotes("");
@@ -125,8 +129,6 @@ function Tracking() {
             });
 
             const data = await response.json();
-
-            console.log("Goal response:", data);
 
             if (!response.ok) {
                 showMessage(data.message, "error");
@@ -270,13 +272,8 @@ function Tracking() {
         }
     };
 
-    const [pendingGoalAction, setPendingGoalAction] = useState<{
-        id: string;
-        type: "delete";
-    } | null>(null);
-
     const startDeleteGoal = (id: string) => {
-        setPendingGoalAction({ id, type: "delete" });
+        setPendingGoalAction(id);
     };
 
     const cancelGoalAction = () => {
@@ -285,17 +282,14 @@ function Tracking() {
 
     const confirmGoalAction = (goal: any) => {
         if (!pendingGoalAction) return;
-
-        if (pendingGoalAction.type === "delete") {
-            handleDeleteGoal(goal._id);
-        }
+        handleDeleteGoal(goal._id);
     };
 
     return (
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
             {message && (
                 <div
-                    className={`fixed top-24 self-center -6 z-50 px-5 py-3 rounded-xl shadow-lg text-white ${messageType === "success" ? "bg-[#1B3022]" : "bg-red-500"
+                    className={`fixed top-24 self-center z-50 px-5 py-3 rounded-xl shadow-lg text-white ${messageType === "success" ? "bg-[#1B3022]" : "bg-red-500"
                         }`}
                 >
                     {message}
@@ -314,88 +308,27 @@ function Tracking() {
                         </p>
                     </div>
                     <div className="bg-white flex flex-col gap-5 p-5 rounded-xl">
-                        <h2 className="text-xl font-bold">Log Weight</h2>
-                        <section>
-                            <h3>Weight Value</h3>
-                            <input
-                                type="number"
-                                min="30"
-                                max="300"
-                                step="0.1"
-                                placeholder="00.00"
-                                value={weight}
-                                onChange={(e) => setWeight(e.target.value)}
-                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
-                            />
-                        </section>
-                        <section>
-                            <h3>Date</h3>
-                            <input
-                                type="date"
-                                value={date}
-                                onChange={(e) => setDate(e.target.value)}
-                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
-                            />
-                        </section>
-                        <section>
-                            <h3>Optional Notes</h3>
-                            <textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                placeholder="How are you feeling today?"
-                                className="bg-blue-100 rounded-xl h-30 w-full outline-none p-3 resize-none"
-                            />
-                        </section>
-                        <button
-                            onClick={handleSave}
-                            className="bg-[#1B3022] rounded-2xl text-white h-10 hover:bg-[#3b674a]">+ Save Entry</button>
+                        <WeightForm
+                            weight={weight}
+                            date={date}
+                            notes={notes}
+                            setWeight={setWeight}
+                            setDate={setDate}
+                            setNotes={setNotes}
+                            handleSave={handleSave}
+                        />
                     </div>
 
                     <div className="bg-white flex flex-col gap-5 p-5 rounded-xl mt-5">
-                        <h2 className="text-xl font-bold">Set Goal</h2>
-
-                        <section>
-                            <h3>Start Weight</h3>
-                            <input
-                                type="number"
-                                min="30"
-                                max="300"
-                                step="0.1"
-                                placeholder="Example: 80"
-                                value={startWeight}
-                                onChange={(e) => setStartWeight(e.target.value)}
-                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
-                            />
-                        </section>
-
-                        <section>
-                            <h3>Target Weight</h3>
-                            <input
-                                type="number"
-                                min="30"
-                                max="300"
-                                step="0.1"
-                                placeholder="Example: 70"
-                                value={targetWeight}
-                                onChange={(e) => setTargetWeight(e.target.value)}
-                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
-                            />
-                        </section>
-
-                        <section>
-                            <h3>Target Date</h3>
-                            <input
-                                type="date"
-                                value={targetDate}
-                                onChange={(e) => setTargetDate(e.target.value)}
-                                className="bg-blue-100 rounded-xl h-10 w-full outline-none p-3"
-                            />
-                        </section>
-
-                        <button
-                            onClick={handleSaveGoal}
-                            className="bg-[#1B3022] rounded-2xl text-white h-10 hover:bg-[#3b674a]">
-                            Save Goal</button>
+                        <GoalForm
+                            startWeight={startWeight}
+                            targetWeight={targetWeight}
+                            targetDate={targetDate}
+                            setStartWeight={setStartWeight}
+                            setTargetWeight={setTargetWeight}
+                            setTargetDate={setTargetDate}
+                            handleSaveGoal={handleSaveGoal}
+                        />
                     </div>
 
                     <div className="bg-[#e2ece2] flex flex-col p-5 mt-5 rounded-2xl">
@@ -408,272 +341,48 @@ function Tracking() {
                         <p>You've logged 12 days in a row. Consistency is your greatest
                             strenght in achieving wellness goals.</p>
                     </div>
-
-                    <div>
-
-                    </div>
                 </div>
+
                 <div className="w-14/20 flex flex-col gap-5">
 
-                    <div className="flex justify-between">
-                        <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
-                            <h3 className="text-2xl">Current Weight</h3>
-                            <div className="flex items-end gap-1">
-                                <span className="text-2xl font-bold">{stats.currentWeight}</span>
-                                <span className="text-sm self-end">kg</span>
-                            </div>
-                        </div>
+                    <StatsCards stats={stats} />
 
-                        <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
-                            <h3 className="text-2xl">Weekly Change</h3>
-                            <div className="flex items-end gap-1">
-                                <span className="text-2xl font-bold">
-                                    {stats.weeklyChange > 0 ? "+" : ""}
-                                    {stats.weeklyChange}
-                                </span>
-                                <span className="text-sm self-end">kg</span>
-                            </div>
-                        </div>
-
-                        <div className="bg-white w-1/4 p-5 rounded-2xl flex flex-col gap-4">
-                            <h3 className="text-2xl">Goal Progress</h3>
-
-                            <div className="flex">
-                                <h3 className="text-2xl font-bold">{stats.goalProgress}%</h3>
-                            </div>
-
-                            <div className="h-1 w-full bg-black/20 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-[#3e5d48] rounded-full"
-                                    style={{ width: `${stats.goalProgress}%` }}
-                                ></div>
-                            </div>
-                        </div>
+                    <div className="bg-white rounded-2xl pb-0 p-5">
+                        <WeightHistory
+                            history={history}
+                            visibleHistory={visibleHistory}
+                            showAll={showAll}
+                            setShowAll={setShowAll}
+                            weightEditMode={weightEditMode}
+                            setWeightEditMode={setWeightEditMode}
+                            pendingWeightAction={pendingWeightAction}
+                            editingWeightId={editingWeightId}
+                            editWeight={editWeight}
+                            editDate={editDate}
+                            editNotes={editNotes}
+                            setEditWeight={setEditWeight}
+                            setEditDate={setEditDate}
+                            setEditNotes={setEditNotes}
+                            startEditWeightConfirm={startEditWeightConfirm}
+                            startDeleteWeight={startDeleteWeight}
+                            cancelWeightAction={cancelWeightAction}
+                            confirmWeightAction={confirmWeightAction}
+                        />
                     </div>
 
                     <div className="bg-white rounded-2xl pb-0 p-5">
-                        <div>
-                            <div className="flex justify-between">
-                                <h2 className="text-2xl font-bold py-5">Weight History</h2>
-                                <button
-                                    onClick={() => setWeightEditMode(!weightEditMode)}
-                                    className="text-[#116a2aca] font-bold hover:underline"
-                                >
-                                    {weightEditMode ? "Done" : "Manage"}
-                                </button>
-                            </div>
-
-                            <section>
-                                <div
-                                    className={`grid ${weightEditMode
-                                        ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
-                                        : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
-                                        } text-xl mb-5`}
-                                >
-                                    {weightEditMode && <h2>ACTIONS</h2>}
-                                    <h2>DATE</h2>
-                                    <h2>WEIGHT</h2>
-                                    <h2>CHANGE</h2>
-                                    <h2>NOTES</h2>
-                                </div>
-
-                                <div className="flex flex-col gap-8">
-                                    {visibleHistory.map((entry) => (
-                                        <div
-                                            key={entry._id}
-                                            className={`grid ${weightEditMode
-                                                ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
-                                                : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
-                                                } items-center`}
-                                        >
-                                            {weightEditMode && (
-                                                <div className="flex gap-2 items-center">
-                                                    {pendingWeightAction?.id === entry._id ? (
-                                                        <>
-                                                            <button
-                                                                onClick={() => confirmWeightAction(entry)}
-                                                                className="text-green-600 font-bold hover:underline"
-                                                            >
-                                                                Confirm
-                                                            </button>
-
-                                                            <button
-                                                                onClick={cancelWeightAction}
-                                                                className="text-red-500 font-bold hover:underline"
-                                                            >
-                                                                Cancel
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => startEditWeightConfirm(entry)}
-                                                                className="w-6 h-6 flex items-center justify-center rounded-lg bg-[#116a2aca] text-white hover:bg-[#0d5422]"
-                                                            >
-                                                                <i className="fa-solid fa-pen text-sm"></i>
-                                                            </button>
-
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => startDeleteWeight(entry._id)}
-                                                                className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600"
-                                                            >
-                                                                <i className="fa-solid fa-xmark text-lg"></i>
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            )}
-                                            {editingWeightId === entry._id ? (
-                                                <>
-                                                    <input
-                                                        type="date"
-                                                        value={editDate}
-                                                        onChange={(e) => setEditDate(e.target.value)}
-                                                        className="bg-blue-100 rounded-lg p-2 outline-none"
-                                                    />
-
-                                                    <input
-                                                        type="number"
-                                                        value={editWeight}
-                                                        onChange={(e) => setEditWeight(e.target.value)}
-                                                        className="bg-blue-100 rounded-lg p-2 outline-none"
-                                                    />
-
-                                                    <h3 className="text-gray-500">Editing</h3>
-
-                                                    <input
-                                                        value={editNotes}
-                                                        onChange={(e) => setEditNotes(e.target.value)}
-                                                        className="bg-blue-100 rounded-lg p-2 outline-none"
-                                                    />
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <h3>{new Date(entry.date).toISOString().split("T")[0]}</h3>
-
-                                                    <h3>{entry.weight} kg</h3>
-
-                                                    <h3
-                                                        className={
-                                                            entry.change < 0
-                                                                ? "text-red-500"
-                                                                : entry.change > 0
-                                                                    ? "text-[#116a2aca]"
-                                                                    : ""
-                                                        }
-                                                    >
-                                                        {entry.change < 0
-                                                            ? `↓ ${entry.change} kg`
-                                                            : entry.change > 0
-                                                                ? `↑ +${entry.change} kg`
-                                                                : "– 0.0 kg"}
-                                                    </h3>
-
-                                                    <h3>{entry.notes || "–"}</h3>
-                                                </>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                            {history.length >= 8 && (
-                                <button
-                                    onClick={() => setShowAll(!showAll)}
-                                    className="w-[calc(100%+2.5rem)] -mx-5 border-t-2 mt-10 py-2 border-[#bad7c3] hover:bg-[#bad7c3] hover:rounded-b-2xl"
-                                >
-                                    {showAll ? "Show Less" : "View Full History"}
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl pb-0 p-5">
-                        <div className="flex justify-between">
-                            <h2 className="text-2xl font-bold py-5">Goal History</h2>
-                            <button
-                                onClick={() => setGoalEditMode(!goalEditMode)}
-                                className="text-[#116a2aca] font-bold hover:underline"
-                            >
-                                {goalEditMode ? "Done" : "Manage"}
-                            </button>
-                        </div>
-                        <section>
-                            <div
-                                className={`grid ${goalEditMode
-                                    ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
-                                    : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
-                                    } text-xl mb-5`}
-                            >
-                                {goalEditMode && <h2>ACTIONS</h2>}
-                                <h2>START</h2>
-                                <h2>TARGET</h2>
-                                <h2>TARGET DATE</h2>
-                                <h2>STATUS</h2>
-                            </div>
-
-                            <div className="flex flex-col gap-8">
-                                {visibleGoals.map((goal) => (
-                                    <div
-                                        key={goal._id}
-                                        className={`grid ${goalEditMode
-                                            ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
-                                            : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
-                                            } items-center`}
-                                    >
-                                        {goalEditMode && (
-                                            <div className="flex gap-2 items-center">
-                                                {pendingGoalAction?.id === goal._id ? (
-                                                    <>
-                                                        <button
-                                                            onClick={() => confirmGoalAction(goal)}
-                                                            className="text-green-600 font-bold hover:underline"
-                                                        >
-                                                            Confirm
-                                                        </button>
-
-                                                        <button
-                                                            onClick={cancelGoalAction}
-                                                            className="text-red-500 font-bold hover:underline"
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => startDeleteGoal(goal._id)}
-                                                        className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
-                                                    >
-                                                        <i className="fa-solid fa-xmark text-lg"></i>
-                                                    </button>
-                                                )}
-                                            </div>
-                                        )}
-                                        <h3>{goal.startWeight} kg</h3>
-                                        <h3>{goal.targetWeight} kg</h3>
-                                        <h3>{new Date(goal.targetDate).toISOString().split("T")[0]}</h3>
-
-                                        <h3
-                                            className={
-                                                goal.isActive ? "text-[#116a2aca] font-bold" : "text-gray-500"
-                                            }
-                                        >
-                                            {goal.isActive ? "Active" : "Old goal"}
-                                        </h3>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {goals.length >= 3 && (
-                                <button
-                                    onClick={() => setShowAllGoals(!showAllGoals)}
-                                    className="w-[calc(100%+2.5rem)] -mx-5 border-t-2 mt-10 py-2 border-[#bad7c3] hover:bg-[#bad7c3] hover:rounded-b-2xl"
-                                >
-                                    {showAllGoals ? "Show Less" : "View Full Goal History"}
-                                </button>
-                            )}
-                        </section>
+                        <GoalHistory
+                            goals={goals}
+                            visibleGoals={visibleGoals}
+                            showAllGoals={showAllGoals}
+                            setShowAllGoals={setShowAllGoals}
+                            goalEditMode={goalEditMode}
+                            setGoalEditMode={setGoalEditMode}
+                            pendingGoalAction={pendingGoalAction}
+                            startDeleteGoal={startDeleteGoal}
+                            cancelGoalAction={cancelGoalAction}
+                            confirmGoalAction={confirmGoalAction}
+                        />
                     </div>
 
                     <section className="w-full bg-[url('/Pictures/Pray.png')] bg-cover bg-center text-white text-center p-10 rounded-2xl">
