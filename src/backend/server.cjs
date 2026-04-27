@@ -18,6 +18,7 @@ app.use("/api/weights", weightRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/goals", goalRoutes);
 
+// Connect to MongoDB using connection string from .env
 mongoose
     .connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
