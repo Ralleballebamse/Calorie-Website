@@ -15,6 +15,7 @@ function AuthForm({ mode }: AuthFormProps) {
     const [identifier, setIdentifier] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [serverError, setServerError] = useState("");
 
     const [errors, setErrors] = useState({
         username: "",
@@ -67,7 +68,7 @@ function AuthForm({ mode }: AuthFormProps) {
         const data = await response.json();
 
         if (!response.ok) {
-            alert(data.message);
+            setServerError(data.message || "Invalid credentials");
             return;
         }
 
@@ -191,6 +192,12 @@ function AuthForm({ mode }: AuthFormProps) {
                             </div>
                         )}
 
+                        {serverError && (
+                            <div className="bg-red-100 text-red-600 text-center py-3 rounded-xl text-sm">
+                                {serverError}
+                            </div>
+                        )}
+                        
                         <button
                             type="submit"
                             className="bg-[#1B3022] text-white text-3xl rounded-xl h-20 hover:bg-[#3f704f]"

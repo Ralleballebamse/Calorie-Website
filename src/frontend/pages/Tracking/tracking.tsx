@@ -41,6 +41,14 @@ function Tracking() {
     const [editDate, setEditDate] = useState("");
     const [editNotes, setEditNotes] = useState("");
 
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState<"success" | "error">("success");
+
+    const [pendingWeightAction, setPendingWeightAction] = useState<{
+        id: string;
+        type: "edit" | "delete";
+    } | null>(null);
+
     const fetchDashboardData = async () => {
         const response = await fetch("http://localhost:5000/api/weights/dashboard", {
             headers: {
@@ -63,7 +71,7 @@ function Tracking() {
             const weightNumber = Number(weight);
 
             if (!weight || weightNumber < 30 || weightNumber > 300) {
-                alert("Please enter a realistic weight between 30 and 300 kg.");
+                showMessage("Please enter a realistic weight between 30 and 300 kg.", "error");
                 return;
             }
 
@@ -83,7 +91,7 @@ function Tracking() {
             const data = await response.json();
 
             if (!response.ok) {
-                alert(data.message);
+                showMessage(data.message, "error");
                 return;
             }
 
@@ -121,7 +129,7 @@ function Tracking() {
             console.log("Goal response:", data);
 
             if (!response.ok) {
-                alert(data.message);
+                showMessage(data.message, "error");
                 return;
             }
 
@@ -132,7 +140,7 @@ function Tracking() {
             fetchDashboardData();
             fetchGoals();
 
-            alert("Goal saved!");
+            showMessage("Goal saved!", "success");
         } catch (error) {
             console.error(error);
         }
@@ -155,10 +163,6 @@ function Tracking() {
     const visibleGoals = showAllGoals ? goals : goals.slice(0, 3);
 
     const handleDeleteWeight = async (id: string) => {
-        const confirmDelete = confirm("Delete this weight entry?");
-
-        if (!confirmDelete) return;
-
         const response = await fetch(`http://localhost:5000/api/weights/${id}`, {
             method: "DELETE",
             headers: {
@@ -169,18 +173,15 @@ function Tracking() {
         const data = await response.json();
 
         if (!response.ok) {
-            alert(data.message);
+            showMessage(data.message, "error");
             return;
         }
 
+        setPendingWeightAction(null);
         fetchDashboardData();
     };
 
     const handleDeleteGoal = async (id: string) => {
-        const confirmDelete = confirm("Delete this goal?");
-
-        if (!confirmDelete) return;
-
         const response = await fetch(`http://localhost:5000/api/goals/${id}`, {
             method: "DELETE",
             headers: {
@@ -191,10 +192,11 @@ function Tracking() {
         const data = await response.json();
 
         if (!response.ok) {
-            alert(data.message);
+            showMessage(data.message, "error");
             return;
         }
 
+        setPendingGoalAction(null);
         fetchGoals();
         fetchDashboardData();
     };
@@ -223,7 +225,7 @@ function Tracking() {
         const data = await response.json();
 
         if (!response.ok) {
-            alert(data.message);
+            showMessage(data.message, "error");
             return;
         }
 
@@ -231,8 +233,74 @@ function Tracking() {
         fetchDashboardData();
     };
 
+    const showMessage = (text: string, type: "success" | "error" = "success") => {
+        setMessage(text);
+        setMessageType(type);
+
+        setTimeout(() => {
+            setMessage("");
+        }, 3000);
+    };
+
+    const startDeleteWeight = (id: string) => {
+        setEditingWeightId(null);
+        setPendingWeightAction({ id, type: "delete" });
+    };
+
+    const startEditWeightConfirm = (entry: any) => {
+        setPendingWeightAction({ id: entry._id, type: "edit" });
+        startEditWeight(entry);
+    };
+
+    const cancelWeightAction = () => {
+        setPendingWeightAction(null);
+        setEditingWeightId(null);
+    };
+
+    const confirmWeightAction = (entry: any) => {
+        if (!pendingWeightAction) return;
+
+        if (pendingWeightAction.type === "edit") {
+            handleUpdateWeight(entry._id);
+            setPendingWeightAction(null);
+        }
+
+        if (pendingWeightAction.type === "delete") {
+            handleDeleteWeight(entry._id);
+        }
+    };
+
+    const [pendingGoalAction, setPendingGoalAction] = useState<{
+        id: string;
+        type: "delete";
+    } | null>(null);
+
+    const startDeleteGoal = (id: string) => {
+        setPendingGoalAction({ id, type: "delete" });
+    };
+
+    const cancelGoalAction = () => {
+        setPendingGoalAction(null);
+    };
+
+    const confirmGoalAction = (goal: any) => {
+        if (!pendingGoalAction) return;
+
+        if (pendingGoalAction.type === "delete") {
+            handleDeleteGoal(goal._id);
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
+            {message && (
+                <div
+                    className={`fixed top-24 self-center -6 z-50 px-5 py-3 rounded-xl shadow-lg text-white ${messageType === "success" ? "bg-[#1B3022]" : "bg-red-500"
+                        }`}
+                >
+                    {message}
+                </div>
+            )}
             <Header />
             <div className="p-10 flex justify-between">
                 <div className="w-5/20">
@@ -419,18 +487,18 @@ function Tracking() {
                                                 } items-center`}
                                         >
                                             {weightEditMode && (
-                                                <div className="flex gap-3 items-center">
-                                                    {editingWeightId === entry._id ? (
+                                                <div className="flex gap-2 items-center">
+                                                    {pendingWeightAction?.id === entry._id ? (
                                                         <>
                                                             <button
-                                                                onClick={() => handleUpdateWeight(entry._id)}
-                                                                className="text-[#116a2aca] font-bold hover:underline"
+                                                                onClick={() => confirmWeightAction(entry)}
+                                                                className="text-green-600 font-bold hover:underline"
                                                             >
-                                                                Save
+                                                                Confirm
                                                             </button>
 
                                                             <button
-                                                                onClick={() => setEditingWeightId(null)}
+                                                                onClick={cancelWeightAction}
                                                                 className="text-red-500 font-bold hover:underline"
                                                             >
                                                                 Cancel
@@ -440,7 +508,7 @@ function Tracking() {
                                                         <>
                                                             <button
                                                                 type="button"
-                                                                onClick={() => startEditWeight(entry)}
+                                                                onClick={() => startEditWeightConfirm(entry)}
                                                                 className="w-6 h-6 flex items-center justify-center rounded-lg bg-[#116a2aca] text-white hover:bg-[#0d5422]"
                                                             >
                                                                 <i className="fa-solid fa-pen text-sm"></i>
@@ -448,7 +516,7 @@ function Tracking() {
 
                                                             <button
                                                                 type="button"
-                                                                onClick={() => handleDeleteWeight(entry._id)}
+                                                                onClick={() => startDeleteWeight(entry._id)}
                                                                 className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600"
                                                             >
                                                                 <i className="fa-solid fa-xmark text-lg"></i>
@@ -555,13 +623,31 @@ function Tracking() {
                                             } items-center`}
                                     >
                                         {goalEditMode && (
-                                            <div className="flex items-center">
-                                                <button
-                                                    onClick={() => handleDeleteGoal(goal._id)}
-                                                    className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
-                                                >
-                                                    <i className="fa-solid fa-xmark text-lg"></i>
-                                                </button>
+                                            <div className="flex gap-2 items-center">
+                                                {pendingGoalAction?.id === goal._id ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => confirmGoalAction(goal)}
+                                                            className="text-green-600 font-bold hover:underline"
+                                                        >
+                                                            Confirm
+                                                        </button>
+
+                                                        <button
+                                                            onClick={cancelGoalAction}
+                                                            className="text-red-500 font-bold hover:underline"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => startDeleteGoal(goal._id)}
+                                                        className="w-6 h-6 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+                                                    >
+                                                        <i className="fa-solid fa-xmark text-lg"></i>
+                                                    </button>
+                                                )}
                                             </div>
                                         )}
                                         <h3>{goal.startWeight} kg</h3>
