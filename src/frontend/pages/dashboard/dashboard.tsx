@@ -19,6 +19,7 @@ function Dashboard() {
 
     const [selected, setSelected] = useState<"Weekly" | "Monthly">("Weekly");
 
+    // Stores all dashboard data from the backend
     const [dashboardData, setDashboardData] = useState({
         currentWeight: 0,
         yesterdayChange: 0,
@@ -31,6 +32,7 @@ function Dashboard() {
         recentActivity: [],
     });
 
+    // Fetch dashboard data once when the page loads
     useEffect(() => {
         const fetchDashboard = async () => {
             const response = await fetch("http://localhost:5000/api/dashboard", {
@@ -49,11 +51,13 @@ function Dashboard() {
         fetchDashboard();
     }, []);
 
+    // Select correct chart data depending on active tab
     const chartData =
         selected === "Weekly"
             ? dashboardData.weeklyChart
             : dashboardData.monthlyChart;
 
+    // Prevent chart from crashing or looking broken when there is no data
     const hasData = chartData && chartData.length > 0;
 
     const safeChartData = hasData
@@ -64,19 +68,18 @@ function Dashboard() {
         ];
 
     return (
-
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
-
-
             <Header />
 
             <main>
                 <div className="flex flex-col  p-10 gap-10">
                     <div className="flex justify-between">
+
                         <section className="flex flex-col gap-2">
                             <h1 className="text-4xl font-bold">Health Dashboard</h1>
                             <h2 className="text-2xl">Welcome back. Your wellness metrics are looking consistent this week.</h2>
                         </section>
+                        
                         <section className="flex flex-col justify-center">
                             <button
                                 onClick={() => navigate("/tracking")}
@@ -85,6 +88,7 @@ function Dashboard() {
                         </section>
                     </div>
 
+                    {/* Top dashboard statistic cards */}
                     <div className="flex gap-5 justify-between">
                         <section className="flex flex-col w-1/4 bg-white p-5 rounded-xl gap-2 justify-center">
                             <h2 className="text-xl">CURRENT WEIGHT</h2>
@@ -127,6 +131,7 @@ function Dashboard() {
                         </section>
                     </div>
 
+                    {/* Chart and recent activity section */}
                     <div className="flex gap-5">
                         <div className="bg-white rounded-2xl p-8 h-auto w-7/10">
                             <div className="mb-8 flex justify-between">
@@ -134,6 +139,8 @@ function Dashboard() {
                                     <h3 className="font-bold">Weight Progress Analysis</h3>
                                     <p className="text-sm text-gray-500">Last 30 Days Tracking</p>
                                 </section>
+
+                                {/* Toggle between weekly and monthly chart views */}
                                 <section className="bg-gray-200 rounded-lg p-1 flex w-fit">
                                     <button
                                         onClick={() => setSelected("Weekly")}
@@ -142,6 +149,7 @@ function Dashboard() {
                                             : "text-gray-600"
                                             }`}
                                     >Weekly</button>
+
                                     <button
                                         onClick={() => setSelected("Monthly")}
                                         className={`px-4 py-1 rounded-md ${selected === "Monthly"
@@ -152,6 +160,7 @@ function Dashboard() {
                                 </section>
                             </div>
 
+                            {/* Weight progress chart */}
                             <div className="h-80">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={safeChartData}>
@@ -176,13 +185,17 @@ function Dashboard() {
                                 </ResponsiveContainer>
                             </div>
                         </div>
+
+                        {/* Recent logged weight entries */}
                         <div className="bg-white w-3/10 flex flex-col p-10 gap-10 rounded-2xl">
                             <section className="flex justify-between">
                                 <h2>Recent Activity</h2>
                                 <button
                                     onClick={() => navigate("/tracking")}
-                                    className="hover:underline">View All</button>
+                                    className="hover:underline">
+                                        View All</button>
                             </section>
+
                             {dashboardData.recentActivity.map((activity: any) => (
                                 <section key={activity._id} className="flex gap-3">
                                     <div className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
@@ -204,6 +217,7 @@ function Dashboard() {
                         </div>
                     </div>
 
+                    {/* Promotional section */}
                     <div className="bg-[url('/Pictures/VitaPro.png')] rounded-2xl h-auto text-white">
                         <section className="flex flex-col gap-5 w-1/2 p-10">
                             <h2 className="text-4xl">Upgrade to VitaTrack Pro</h2>
@@ -212,7 +226,6 @@ function Dashboard() {
                                 className="bg-white rounded-2xl w-50 h-15 text-xl text-black font-bold hover:bg-[#3b674a]">Start Free Trial</button>
                         </section>
                     </div>
-
 
                 </div>
             </main>
