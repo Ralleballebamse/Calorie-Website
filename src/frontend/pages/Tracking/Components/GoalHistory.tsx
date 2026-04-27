@@ -1,3 +1,6 @@
+
+
+// Props needed to display and manage the goal history table
 type GoalHistoryProps = {
     goals: any[];
     visibleGoals: any[];
@@ -25,9 +28,9 @@ function GoalHistory({
 }: GoalHistoryProps) {
     return (
         <div className="bg-white rounded-2xl pb-0 p-5">
+            {/* Header with manage/done toggle */}
             <div className="flex justify-between">
                 <h2 className="text-2xl font-bold py-5">Goal History</h2>
-
                 <button
                     onClick={() => setGoalEditMode(!goalEditMode)}
                     className="text-[#116a2aca] font-bold hover:underline"
@@ -37,6 +40,7 @@ function GoalHistory({
             </div>
 
             <section>
+                {/* Table headings change when manage mode is active */}
                 <div
                     className={`grid ${goalEditMode
                         ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
@@ -59,23 +63,21 @@ function GoalHistory({
                                 : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]"
                                 } items-center`}
                         >
+                            {/* Delete controls only show in manage mode */}
                             {goalEditMode && (
                                 <div className="flex gap-2 items-center">
                                     {pendingGoalAction === goal._id ? (
                                         <>
+                                            {/* Confirm/cancel step prevents accidental deletion */}
                                             <button
                                                 onClick={() => confirmGoalAction(goal)}
                                                 className="text-green-600 font-bold hover:underline"
-                                            >
-                                                Confirm
-                                            </button>
+                                            >Confirm</button>
 
                                             <button
                                                 onClick={cancelGoalAction}
                                                 className="text-red-500 font-bold hover:underline"
-                                            >
-                                                Cancel
-                                            </button>
+                                            >Cancel</button>
                                         </>
                                     ) : (
                                         <button
@@ -88,10 +90,12 @@ function GoalHistory({
                                 </div>
                             )}
 
+                            {/* Goal values */}
                             <h3>{goal.startWeight} kg</h3>
                             <h3>{goal.targetWeight} kg</h3>
                             <h3>{new Date(goal.targetDate).toISOString().split("T")[0]}</h3>
 
+                            {/* Shows whether this goal is currently active */}
                             <h3
                                 className={
                                     goal.isActive
@@ -105,6 +109,7 @@ function GoalHistory({
                     ))}
                 </div>
 
+                {/* Show more/less button for long goal history */}
                 {goals.length >= 3 && (
                     <button
                         onClick={() => setShowAllGoals(!showAllGoals)}

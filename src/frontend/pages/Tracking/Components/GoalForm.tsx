@@ -1,3 +1,6 @@
+
+
+// Props needed to control the goal form from the parent Tracking component
 type GoalFormProps = {
     startWeight: string;
     targetWeight: string;
@@ -21,6 +24,7 @@ function GoalForm({
         <div className="bg-white flex flex-col gap-5 p-5 rounded-xl mt-5">
             <h2 className="text-xl font-bold">Set Goal</h2>
 
+            {/* Starting weight for the goal */}
             <section>
                 <h3>Start Weight</h3>
                 <input
@@ -35,6 +39,7 @@ function GoalForm({
                 />
             </section>
 
+            {/* Target weight the user wants to reach */}
             <section>
                 <h3>Target Weight</h3>
                 <input
@@ -49,6 +54,7 @@ function GoalForm({
                 />
             </section>
 
+            {/* Date by which the user wants to reach the goal */}
             <section>
                 <h3>Target Date</h3>
                 <input
@@ -59,6 +65,7 @@ function GoalForm({
                 />
             </section>
 
+            {/* Saves the goal through the parent handler */}
             <button
                 onClick={handleSaveGoal}
                 className="bg-[#1B3022] rounded-2xl text-white h-10 hover:bg-[#3b674a]"

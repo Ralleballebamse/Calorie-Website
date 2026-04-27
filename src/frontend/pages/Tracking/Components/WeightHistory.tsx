@@ -1,3 +1,6 @@
+
+
+// Props needed to display and manage the weight history table
 type WeightHistoryProps = {
     history: any[];
     visibleHistory: any[];
@@ -45,6 +48,7 @@ function WeightHistory({
     return (
         <div className="bg-white rounded-2xl pb-0 p-5">
             <div>
+                {/* Header with manage/done toggle */}
                 <div className="flex justify-between">
                     <h2 className="text-2xl font-bold py-5">Weight History</h2>
 
@@ -57,10 +61,11 @@ function WeightHistory({
                 </div>
 
                 <section>
+                    {/* Table headings change when manage mode is active */}
                     <div
                         className={`grid ${weightEditMode
-                                ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
-                                : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
+                            ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
+                            : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
                             } text-xl mb-5`}
                     >
                         {weightEditMode && <h2>ACTIONS</h2>}
@@ -75,10 +80,11 @@ function WeightHistory({
                             <div
                                 key={entry._id}
                                 className={`grid ${weightEditMode
-                                        ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
-                                        : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
+                                    ? "grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
+                                    : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,2fr)]"
                                     } items-center`}
                             >
+                                {/* Edit/delete controls only show in manage mode */}
                                 {weightEditMode && (
                                     <div className="flex gap-2 items-center">
                                         {pendingWeightAction?.id === entry._id ? (
@@ -86,16 +92,12 @@ function WeightHistory({
                                                 <button
                                                     onClick={() => confirmWeightAction(entry)}
                                                     className="text-green-600 font-bold hover:underline"
-                                                >
-                                                    Confirm
-                                                </button>
+                                                >Confirm</button>
 
                                                 <button
                                                     onClick={cancelWeightAction}
                                                     className="text-red-500 font-bold hover:underline"
-                                                >
-                                                    Cancel
-                                                </button>
+                                                >Cancel</button>
                                             </>
                                         ) : (
                                             <>
@@ -119,6 +121,7 @@ function WeightHistory({
                                     </div>
                                 )}
 
+                                {/* Show editable inputs for the selected entry */}
                                 {editingWeightId === entry._id ? (
                                     <>
                                         <input
@@ -145,9 +148,11 @@ function WeightHistory({
                                     </>
                                 ) : (
                                     <>
+                                        {/* Default read-only row */}
                                         <h3>{new Date(entry.date).toISOString().split("T")[0]}</h3>
                                         <h3>{entry.weight} kg</h3>
 
+                                        {/* Color and icon show whether weight went up/down */}
                                         <h3
                                             className={
                                                 entry.change < 0
@@ -172,6 +177,7 @@ function WeightHistory({
                     </div>
                 </section>
 
+                {/* Show more/less button for long history */}
                 {history.length >= 8 && (
                     <button
                         onClick={() => setShowAll(!showAll)}

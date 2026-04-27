@@ -1,3 +1,6 @@
+
+
+// Props for controlled weight input form
 type WeightFormProps = {
     weight: string;
     date: string;
@@ -21,6 +24,7 @@ function WeightForm({
         <div className="bg-white flex flex-col gap-5 p-5 rounded-xl">
             <h2 className="text-xl font-bold">Log Weight</h2>
 
+            {/* Input for weight value */}
             <section>
                 <h3>Weight Value</h3>
                 <input
@@ -35,6 +39,7 @@ function WeightForm({
                 />
             </section>
 
+            {/* Date of the weight entry */}
             <section>
                 <h3>Date</h3>
                 <input
@@ -45,6 +50,7 @@ function WeightForm({
                 />
             </section>
 
+            {/* Optional notes field for extra context */}
             <section>
                 <h3>Optional Notes</h3>
                 <textarea
@@ -55,12 +61,11 @@ function WeightForm({
                 />
             </section>
 
+            {/* Triggers save logic in parent component */}
             <button
                 onClick={handleSave}
                 className="bg-[#1B3022] rounded-2xl text-white h-10 hover:bg-[#3b674a]"
-            >
-                + Save Entry
-            </button>
+            >+ Save Entry</button>
         </div>
     );
 }
