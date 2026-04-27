@@ -8,54 +8,68 @@ import GoalForm from "./Components/GoalForm";
 import StatsCards from "./Components/StatsCards";
 import { useEffect, useState } from "react";
 
+// Tracking page: handles weight logs, goals, stats, editing, and deletion
 function Tracking() {
 
+    // Fetch initial tracking data when the page loads
     useEffect(() => {
         fetchDashboardData();
         fetchGoals();
     }, []);
 
+    // Summary statistics displayed in the stats cards (top section)
     const [stats, setStats] = useState({
         currentWeight: 0,
         weeklyChange: 0,
         goalProgress: 0,
     });
 
+    // Goal form inputs
     const [startWeight, setStartWeight] = useState("");
     const [targetWeight, setTargetWeight] = useState("");
     const [targetDate, setTargetDate] = useState("");
 
-    const [history, setHistory] = useState<any[]>([]);
-
+    // Weight form inputs
     const [weight, setWeight] = useState("");
     const [date, setDate] = useState("");
     const [notes, setNotes] = useState("");
 
-    const [showAll, setShowAll] = useState(false);
-
-    const visibleHistory = showAll ? history : history.slice(0, 8);
-
+    // Weight history and goal history data from backend
+    const [history, setHistory] = useState<any[]>([]);
     const [goals, setGoals] = useState<any[]>([]);
+
+    // Toggle showing full history vs limited preview
+    const [showAllHistory, setShowAll] = useState(false);
     const [showAllGoals, setShowAllGoals] = useState(false);
 
+    // Controls how many history rows are visible
+    const visibleHistory = showAllHistory ? history : history.slice(0, 8);
+    const visibleGoals = showAllGoals ? goals : goals.slice(0, 3);
+
+    // Toggle edit/manage modes for tables
     const [weightEditMode, setWeightEditMode] = useState(false);
     const [goalEditMode, setGoalEditMode] = useState(false);
 
+    // Stores temporary edit values for a selected weight entry
     const [editingWeightId, setEditingWeightId] = useState<string | null>(null);
     const [editWeight, setEditWeight] = useState("");
     const [editDate, setEditDate] = useState("");
     const [editNotes, setEditNotes] = useState("");
 
+    // Toast message shown for success/error feedback
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState<"success" | "error">("success");
 
+    // Tracks which goal is waiting for delete confirmation
     const [pendingGoalAction, setPendingGoalAction] = useState<string | null>(null);
 
+    // Tracks whether a weight entry is waiting for edit or delete confirmation
     const [pendingWeightAction, setPendingWeightAction] = useState<{
         id: string;
         type: "edit" | "delete";
     } | null>(null);
 
+    // Fetch stats and weight history for the tracking page
     const fetchDashboardData = async () => {
         const response = await fetch("http://localhost:5000/api/weights/dashboard", {
             headers: {
@@ -71,6 +85,7 @@ function Tracking() {
         }
     };
 
+    // Save a new weight entry
     const handleSave = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -113,6 +128,7 @@ function Tracking() {
         }
     };
 
+    // Save a new goal and refresh dashboard/goals
     const handleSaveGoal = async () => {
         try {
             const response = await fetch("http://localhost:5000/api/goals", {
@@ -148,6 +164,7 @@ function Tracking() {
         }
     };
 
+    // Fetch all goals for the user
     const fetchGoals = async () => {
         const response = await fetch("http://localhost:5000/api/goals", {
             headers: {
@@ -162,8 +179,7 @@ function Tracking() {
         }
     };
 
-    const visibleGoals = showAllGoals ? goals : goals.slice(0, 3);
-
+    // Delete selected weight entry
     const handleDeleteWeight = async (id: string) => {
         const response = await fetch(`http://localhost:5000/api/weights/${id}`, {
             method: "DELETE",
@@ -183,6 +199,7 @@ function Tracking() {
         fetchDashboardData();
     };
 
+    // Delete selected goal
     const handleDeleteGoal = async (id: string) => {
         const response = await fetch(`http://localhost:5000/api/goals/${id}`, {
             method: "DELETE",
@@ -203,6 +220,7 @@ function Tracking() {
         fetchDashboardData();
     };
 
+    // Prepare selected weight entry for editing
     const startEditWeight = (entry: any) => {
         setEditingWeightId(entry._id);
         setEditWeight(String(entry.weight));
@@ -210,6 +228,7 @@ function Tracking() {
         setEditNotes(entry.notes || "");
     };
 
+    // Update selected weight entry
     const handleUpdateWeight = async (id: string) => {
         const response = await fetch(`http://localhost:5000/api/weights/${id}`, {
             method: "PATCH",
@@ -235,6 +254,7 @@ function Tracking() {
         fetchDashboardData();
     };
 
+    // Show temporary success/error message
     const showMessage = (text: string, type: "success" | "error" = "success") => {
         setMessage(text);
         setMessageType(type);
@@ -244,21 +264,25 @@ function Tracking() {
         }, 3000);
     };
 
+    // Start delete confirmation for a weight entry
     const startDeleteWeight = (id: string) => {
         setEditingWeightId(null);
         setPendingWeightAction({ id, type: "delete" });
     };
 
+    // Start edit confirmation for a weight entry
     const startEditWeightConfirm = (entry: any) => {
         setPendingWeightAction({ id: entry._id, type: "edit" });
         startEditWeight(entry);
     };
 
+    // Cancel current weight edit/delete action
     const cancelWeightAction = () => {
         setPendingWeightAction(null);
         setEditingWeightId(null);
     };
 
+    // Confirm either edit or delete action for weight entry
     const confirmWeightAction = (entry: any) => {
         if (!pendingWeightAction) return;
 
@@ -272,14 +296,17 @@ function Tracking() {
         }
     };
 
+    // Start delete confirmation for a goal
     const startDeleteGoal = (id: string) => {
         setPendingGoalAction(id);
     };
 
+    // Cancel goal delete confirmation
     const cancelGoalAction = () => {
         setPendingGoalAction(null);
     };
 
+    // Confirm goal deletion
     const confirmGoalAction = (goal: any) => {
         if (!pendingGoalAction) return;
         handleDeleteGoal(goal._id);
@@ -287,15 +314,16 @@ function Tracking() {
 
     return (
         <div className="min-h-screen flex flex-col bg-[#f9f5ff]">
+
             {message && (
                 <div
                     className={`fixed top-24 self-center z-50 px-5 py-3 rounded-xl shadow-lg text-white ${messageType === "success" ? "bg-[#1B3022]" : "bg-red-500"
                         }`}
-                >
-                    {message}
-                </div>
+                >{message}</div>
             )}
+
             <Header />
+
             <div className="p-10 flex justify-between">
                 <div className="w-5/20">
                     <div className="flex flex-col gap-5 mb-5">
@@ -307,29 +335,26 @@ function Tracking() {
                             Consistent monitoring its the foundation of long-term wellness.
                         </p>
                     </div>
-                    <div className="bg-white flex flex-col gap-5 p-5 rounded-xl">
-                        <WeightForm
-                            weight={weight}
-                            date={date}
-                            notes={notes}
-                            setWeight={setWeight}
-                            setDate={setDate}
-                            setNotes={setNotes}
-                            handleSave={handleSave}
-                        />
-                    </div>
 
-                    <div className="bg-white flex flex-col gap-5 p-5 rounded-xl mt-5">
-                        <GoalForm
-                            startWeight={startWeight}
-                            targetWeight={targetWeight}
-                            targetDate={targetDate}
-                            setStartWeight={setStartWeight}
-                            setTargetWeight={setTargetWeight}
-                            setTargetDate={setTargetDate}
-                            handleSaveGoal={handleSaveGoal}
-                        />
-                    </div>
+                    <WeightForm
+                        weight={weight}
+                        date={date}
+                        notes={notes}
+                        setWeight={setWeight}
+                        setDate={setDate}
+                        setNotes={setNotes}
+                        handleSave={handleSave}
+                    />
+
+                    <GoalForm
+                        startWeight={startWeight}
+                        targetWeight={targetWeight}
+                        targetDate={targetDate}
+                        setStartWeight={setStartWeight}
+                        setTargetWeight={setTargetWeight}
+                        setTargetDate={setTargetDate}
+                        handleSaveGoal={handleSaveGoal}
+                    />
 
                     <div className="bg-[#e2ece2] flex flex-col p-5 mt-5 rounded-2xl">
                         <div className="flex pb-3 gap-2">
@@ -351,7 +376,7 @@ function Tracking() {
                         <WeightHistory
                             history={history}
                             visibleHistory={visibleHistory}
-                            showAll={showAll}
+                            showAll={showAllHistory}
                             setShowAll={setShowAll}
                             weightEditMode={weightEditMode}
                             setWeightEditMode={setWeightEditMode}
