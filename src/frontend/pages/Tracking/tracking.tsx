@@ -39,7 +39,7 @@ function Tracking() {
     const [goals, setGoals] = useState<any[]>([]);
 
     // Toggle showing full history vs limited preview
-    const [showAllHistory, setShowAll] = useState(false);
+    const [showAllHistory, setShowAllHistory] = useState(false);
     const [showAllGoals, setShowAllGoals] = useState(false);
 
     // Controls how many history rows are visible
@@ -63,6 +63,9 @@ function Tracking() {
     // Tracks which goal is waiting for delete confirmation
     const [pendingGoalAction, setPendingGoalAction] = useState<string | null>(null);
 
+    // For preloading site
+    const [loading, setLoading] = useState(true);
+
     // Tracks whether a weight entry is waiting for edit or delete confirmation
     const [pendingWeightAction, setPendingWeightAction] = useState<{
         id: string;
@@ -71,6 +74,8 @@ function Tracking() {
 
     // Fetch stats and weight history for the tracking page
     const fetchDashboardData = async () => {
+        setLoading(true);
+
         const response = await fetch("http://localhost:5000/api/weights/dashboard", {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -83,6 +88,7 @@ function Tracking() {
             setStats(data.stats);
             setHistory(data.history);
         }
+        setLoading(false);
     };
 
     // Save a new weight entry
@@ -324,100 +330,106 @@ function Tracking() {
 
             <Header />
 
-            <div className="p-10 flex justify-between">
-                <div className="w-5/20">
-                    <div className="flex flex-col gap-5 mb-5">
-                        <h1 className="text-4xl font-bold">
-                            Precision <br /> Tracking
-                        </h1>
-                        <p className="text-[#116a2aca]">
-                            Document your journey with medical grade precision.
-                            Consistent monitoring its the foundation of long-term wellness.
-                        </p>
-                    </div>
-
-                    <WeightForm
-                        weight={weight}
-                        date={date}
-                        notes={notes}
-                        setWeight={setWeight}
-                        setDate={setDate}
-                        setNotes={setNotes}
-                        handleSave={handleSave}
-                    />
-
-                    <GoalForm
-                        startWeight={startWeight}
-                        targetWeight={targetWeight}
-                        targetDate={targetDate}
-                        setStartWeight={setStartWeight}
-                        setTargetWeight={setTargetWeight}
-                        setTargetDate={setTargetDate}
-                        handleSaveGoal={handleSaveGoal}
-                    />
-
-                    <div className="bg-[#e2ece2] flex flex-col p-5 mt-5 rounded-2xl">
-                        <div className="flex pb-3 gap-2">
-                            <section className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
-                                <i className="fa-regular fa-star"></i>
-                            </section>
-                            <h2 className="text-[#52795e] text-xl font-bold self-center">Steady Progress!</h2>
+            {loading ? (
+                <div className="flex justify-center items-center h-80">
+                    <p className="text-xl">Loading tracking data...</p>
+                </div>
+            ) : (
+                <div className="p-10 flex justify-between">
+                    <div className="w-5/20">
+                        <div className="flex flex-col gap-5 mb-5">
+                            <h1 className="text-4xl font-bold">
+                                Precision <br /> Tracking
+                            </h1>
+                            <p className="text-[#116a2aca]">
+                                Document your journey with medical grade precision.
+                                Consistent monitoring its the foundation of long-term wellness.
+                            </p>
                         </div>
-                        <p>You've logged 12 days in a row. Consistency is your greatest
-                            strenght in achieving wellness goals.</p>
+
+                        <WeightForm
+                            weight={weight}
+                            date={date}
+                            notes={notes}
+                            setWeight={setWeight}
+                            setDate={setDate}
+                            setNotes={setNotes}
+                            handleSave={handleSave}
+                        />
+
+                        <GoalForm
+                            startWeight={startWeight}
+                            targetWeight={targetWeight}
+                            targetDate={targetDate}
+                            setStartWeight={setStartWeight}
+                            setTargetWeight={setTargetWeight}
+                            setTargetDate={setTargetDate}
+                            handleSaveGoal={handleSaveGoal}
+                        />
+
+                        <div className="bg-[#e2ece2] flex flex-col p-5 mt-5 rounded-2xl">
+                            <div className="flex pb-3 gap-2">
+                                <section className="bg-[#3e5d48] text-white w-10 h-10 flex flex-col text-center justify-center rounded-4xl">
+                                    <i className="fa-regular fa-star"></i>
+                                </section>
+                                <h2 className="text-[#52795e] text-xl font-bold self-center">Steady Progress!</h2>
+                            </div>
+                            <p>You've logged 12 days in a row. Consistency is your greatest
+                                strenght in achieving wellness goals.</p>
+                        </div>
+                    </div>
+
+                    <div className="w-14/20 flex flex-col gap-5">
+
+                        <StatsCards stats={stats} />
+
+                        <div className="bg-white rounded-2xl pb-0 p-5">
+                            <WeightHistory
+                                history={history}
+                                visibleHistory={visibleHistory}
+                                showAll={showAllHistory}
+                                setShowAll={setShowAllHistory}
+                                weightEditMode={weightEditMode}
+                                setWeightEditMode={setWeightEditMode}
+                                pendingWeightAction={pendingWeightAction}
+                                editingWeightId={editingWeightId}
+                                editWeight={editWeight}
+                                editDate={editDate}
+                                editNotes={editNotes}
+                                setEditWeight={setEditWeight}
+                                setEditDate={setEditDate}
+                                setEditNotes={setEditNotes}
+                                startEditWeightConfirm={startEditWeightConfirm}
+                                startDeleteWeight={startDeleteWeight}
+                                cancelWeightAction={cancelWeightAction}
+                                confirmWeightAction={confirmWeightAction}
+                            />
+                        </div>
+
+                        <div className="bg-white rounded-2xl pb-0 p-5">
+                            <GoalHistory
+                                goals={goals}
+                                visibleGoals={visibleGoals}
+                                showAllGoals={showAllGoals}
+                                setShowAllGoals={setShowAllGoals}
+                                goalEditMode={goalEditMode}
+                                setGoalEditMode={setGoalEditMode}
+                                pendingGoalAction={pendingGoalAction}
+                                startDeleteGoal={startDeleteGoal}
+                                cancelGoalAction={cancelGoalAction}
+                                confirmGoalAction={confirmGoalAction}
+                            />
+                        </div>
+
+                        <section className="w-full bg-[url('/Pictures/Pray.png')] bg-cover bg-center text-white text-center p-10 rounded-2xl">
+                            <h2 className="text-3xl">Scientific Perspective</h2>
+                            <p className="text-2xl">Weight fluctuates based on hydration, sodium, and muscle recovery. <br />
+                                Focus on the 7-day rolling average for the most accurate health picture.
+                            </p>
+                        </section>
                     </div>
                 </div>
-
-                <div className="w-14/20 flex flex-col gap-5">
-
-                    <StatsCards stats={stats} />
-
-                    <div className="bg-white rounded-2xl pb-0 p-5">
-                        <WeightHistory
-                            history={history}
-                            visibleHistory={visibleHistory}
-                            showAll={showAllHistory}
-                            setShowAll={setShowAll}
-                            weightEditMode={weightEditMode}
-                            setWeightEditMode={setWeightEditMode}
-                            pendingWeightAction={pendingWeightAction}
-                            editingWeightId={editingWeightId}
-                            editWeight={editWeight}
-                            editDate={editDate}
-                            editNotes={editNotes}
-                            setEditWeight={setEditWeight}
-                            setEditDate={setEditDate}
-                            setEditNotes={setEditNotes}
-                            startEditWeightConfirm={startEditWeightConfirm}
-                            startDeleteWeight={startDeleteWeight}
-                            cancelWeightAction={cancelWeightAction}
-                            confirmWeightAction={confirmWeightAction}
-                        />
-                    </div>
-
-                    <div className="bg-white rounded-2xl pb-0 p-5">
-                        <GoalHistory
-                            goals={goals}
-                            visibleGoals={visibleGoals}
-                            showAllGoals={showAllGoals}
-                            setShowAllGoals={setShowAllGoals}
-                            goalEditMode={goalEditMode}
-                            setGoalEditMode={setGoalEditMode}
-                            pendingGoalAction={pendingGoalAction}
-                            startDeleteGoal={startDeleteGoal}
-                            cancelGoalAction={cancelGoalAction}
-                            confirmGoalAction={confirmGoalAction}
-                        />
-                    </div>
-
-                    <section className="w-full bg-[url('/Pictures/Pray.png')] bg-cover bg-center text-white text-center p-10 rounded-2xl">
-                        <h2 className="text-3xl">Scientific Perspective</h2>
-                        <p className="text-2xl">Weight fluctuates based on hydration, sodium, and muscle recovery. <br />
-                            Focus on the 7-day rolling average for the most accurate health picture.
-                        </p>
-                    </section>
-                </div>
-            </div>
+            )}
             <Footer />
         </div>
     );
