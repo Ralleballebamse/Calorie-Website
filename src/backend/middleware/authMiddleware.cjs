@@ -1,21 +1,31 @@
 const jwt = require("jsonwebtoken");
 
+// Middleware to protect routes by verifying JWT token
 function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
+    // Get Authorization header (expected format: "Bearer TOKEN")
+    const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Not authorized" });
-  }
+    // If no token or wrong format → deny access
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
 
-  const token = authHeader.split(" ")[1];
+    // Extract token from header
+    const token = authHeader.split(" ")[1];
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id;
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
-  }
+    try {
+        // Verify token using secret key
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Attach userId to request so controllers can access it
+        req.userId = decoded.id;
+
+        // Continue to the next middleware / route handler
+        next();
+    } catch (error) {
+        // If token is invalid or expired → deny access
+        return res.status(401).json({ message: "Invalid token" });
+    }
 }
 
 module.exports = authMiddleware;
