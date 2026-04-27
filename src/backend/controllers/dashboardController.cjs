@@ -115,27 +115,22 @@ async function getDashboardData(req, res) {
 
         const currentYear = new Date().getFullYear();
 
-        const monthlyChart = Array.from({ length: 12 }, (_, monthIndex) => {
-            const monthEntries = entries.filter((entry) => {
-                const d = new Date(entry.date);
-                return d.getFullYear() === currentYear && d.getMonth() === monthIndex;
-            });
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        thirtyDaysAgo.setHours(0, 0, 0, 0);
 
-            if (monthEntries.length === 0) {
-                return null;
-            }
-
-            const average =
-                monthEntries.reduce((sum, entry) => sum + entry.weight, 0) /
-                monthEntries.length;
-
-            return {
-                date: new Date(currentYear, monthIndex).toLocaleDateString("en-US", {
+        const monthlyChart = entries
+            .filter((entry) => {
+                const entryDate = new Date(entry.date);
+                return entryDate >= thirtyDaysAgo;
+            })
+            .map((entry) => ({
+                date: new Date(entry.date).toLocaleDateString("en-US", {
                     month: "short",
+                    day: "numeric",
                 }),
-                weight: Number(average.toFixed(1)),
-            };
-        }).filter(Boolean);
+                weight: entry.weight,
+            }));
 
         const recentActivity = [...entries]
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
