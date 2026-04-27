@@ -209,7 +209,6 @@ function Dashboard() {
                             <h2 className="text-4xl">Upgrade to VitaTrack Pro</h2>
                             <h3 className="text-xl">Unlock advanced AI analysis of your biomarkers and personalized meal plans tailored to your metabolism</h3>
                             <button
-                                onClick={() => navigate("/create")}
                                 className="bg-white rounded-2xl w-50 h-15 text-xl text-black font-bold hover:bg-[#3b674a]">Start Free Trial</button>
                         </section>
                     </div>
