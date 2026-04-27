@@ -24,7 +24,8 @@ function AuthForm({ mode }: AuthFormProps) {
         password: "",
     });
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // Handles both login and register submit logic
+    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const newErrors = {
@@ -45,10 +46,12 @@ function AuthForm({ mode }: AuthFormProps) {
 
         setErrors(newErrors);
 
+        // Stop submit if any validation error exists
         if (Object.values(newErrors).some((error) => error !== "")) {
             return;
         }
 
+        // Pick correct backend endpoint
         const url = isLogin
             ? "http://localhost:5000/api/auth/login"
             : "http://localhost:5000/api/auth/register";
@@ -72,6 +75,7 @@ function AuthForm({ mode }: AuthFormProps) {
             return;
         }
 
+        // Store token/user after login, then redirect to dashboard
         if (isLogin) {
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
@@ -197,7 +201,7 @@ function AuthForm({ mode }: AuthFormProps) {
                                 {serverError}
                             </div>
                         )}
-                        
+
                         <button
                             type="submit"
                             className="bg-[#1B3022] text-white text-3xl rounded-xl h-20 hover:bg-[#3f704f]"

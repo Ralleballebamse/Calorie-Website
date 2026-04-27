@@ -32,10 +32,7 @@ function Header() {
             isActive("/")
               ? "text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
               : ""
-          }
-        >
-          Home
-        </button>
+          }>Home</button>
 
         <button
           onClick={() => navigate("/dashboard")}
@@ -44,9 +41,7 @@ function Header() {
               ? "text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
               : ""
           }
-        >
-          Dashboard
-        </button>
+        >Dashboard</button>
 
         <button
           onClick={() => navigate("/tracking")}
@@ -54,10 +49,7 @@ function Header() {
             isActive("/tracking")
               ? "text-[#8BA88E] pb-1 border-b-2 border-[#8BA88E]"
               : ""
-          }
-        >
-          Tracking
-        </button>
+          }>Tracking</button>
       </nav>
 
       <div className="ml-auto flex items-center gap-4 text-xl">
